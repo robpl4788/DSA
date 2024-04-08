@@ -23,8 +23,10 @@ public class InteractiveMenu {
             if (command.equals("hp")) {
                 System.out.println("if list: Insert first");
                 System.out.println("rf list: Remove first");
+                System.out.println("pf list: Peek first");
                 System.out.println("il list: Insert last");
                 System.out.println("rl list: Remove last");
+                System.out.println("pl list: Peek last");
                 System.out.println("hp: display this");
                 System.out.println("ds: Display List");
 
@@ -36,6 +38,12 @@ public class InteractiveMenu {
                 } else {
                     list.popFront();
                 }
+            } else if (command.equals("pf")) {
+                if (list.getSize() == 0) {
+                    System.out.println("Nothing to see");
+                } else {
+                    System.out.println(list.peekFront());
+                }
             } else if (command.equals("il")  && input.length() >= 4) {
                 list.pushBack(input.substring(3));
             } else if (command.equals("rl")) {
@@ -43,6 +51,12 @@ public class InteractiveMenu {
                     System.out.println("Nothing to remove");
                 } else {
                     list.popBack();
+                }
+            } else if (command.equals("pl")) {
+                if (list.getSize() == 0) {
+                    System.out.println("Nothing to see");
+                } else {
+                    System.out.println(list.peekBack());
                 }
             } else if (command.equals("ds")) {
                 int listSize = list.getSize();

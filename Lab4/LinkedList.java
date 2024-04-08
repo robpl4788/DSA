@@ -13,7 +13,11 @@ public class LinkedList {
     }
 
     public void pushFront(Object data) {
-        head = new ListNode(data, head);
+        ListNode newHead = new ListNode(data, head, null);
+        if (head != null) {
+            head.setPrev(newHead);
+        }
+        head = newHead;
         if (tail == null) {
             tail = head;
         }
@@ -22,7 +26,7 @@ public class LinkedList {
     }
 
     public void pushBack(Object data) {
-        ListNode newNode = new ListNode(data, null);
+        ListNode newNode = new ListNode(data, null, tail);
         if (tail != null) {
             tail.setNext(newNode);
         }
