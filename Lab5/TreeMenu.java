@@ -9,8 +9,17 @@ public class TreeMenu {
         @SuppressWarnings("resource")
         Scanner scanner = new Scanner(System.in);
 
+        String[] inputs = {"i q q", "i w w", "i e e", "i r r", "i t t", "i y y", "i u u", "i o o", "i p p", "d tree", "h"};
+        int inputId = 0;
         while (true) {
-            String input = scanner.nextLine();
+            String input;
+
+            if (inputId >= inputs.length) {
+                input = scanner.nextLine();
+            } else {
+                input = inputs[inputId];
+                inputId ++;
+            }
 
             while (input.charAt(input.length() - 1) == ' ') {
                 input = input.substring(0, input.length() - 1);
@@ -20,11 +29,11 @@ public class TreeMenu {
             String command = input.substring(0, 1).toLowerCase();
 
 
-            if (command.equals("hp")) {
+            if (command.equals("h")) {
                 System.out.println("i key data          : Insert node with key and data");
                 System.out.println("r key               : Remove node with key");
                 System.out.println("d tree/in/pre/post  : Display kys as a tree/in order/pre-order/post-order");
-
+                System.out.println("h                   : Display this help menu");
             } else if (command.equals("i")) {
                 String[] splitInput = input.split(" ");
                 if (splitInput.length < 3) {

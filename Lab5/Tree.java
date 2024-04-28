@@ -50,7 +50,8 @@ public class Tree {
             if (key.compareToIgnoreCase(current.getLeft().getKey()) == 0) {
                 result = current;
             }
-        } else if (current.getRight() != null) {
+        } if (current.getRight() != null) {
+            // System.out.println(key + " " + current.getRight().getKey());
             if (key.compareToIgnoreCase(current.getRight().getKey()) == 0) {
                 result = current;
             }
@@ -72,7 +73,9 @@ public class Tree {
                 }
             }  else {
                 throw new TreeException("Something bad happened, something that past me was fairly"
-                        + " confident wouldn't happen so good luck lol");
+                        + " confident wouldn't happen so good luck lol"
+                        + " key current: " + current.getKey()
+                        + " key searchin for " + key);
             }
         }
 
@@ -136,8 +139,14 @@ public class Tree {
 
     public void delete(String key) {
         TreeNode toDelete = findInTree(key, root);
-        TreeNode toDeletesParent = findParentInTree(key, root);
+        TreeNode toDeletesParent = null;
+        boolean deletingRoot = true;
 
+        if (key.compareToIgnoreCase(root.getKey()) != 0) {
+            toDeletesParent = findParentInTree(key, root);
+            deletingRoot = false;
+        }
+        
         //No Children
         if (toDelete.getLeft() == null & toDelete.getRight() == null) {
             //Fix Parent
@@ -187,11 +196,17 @@ public class Tree {
                 TreeNode successor = toDelete.getRight();
 
                 successor.setLeft(toDelete.getLeft());
-                if (toDeletesParent.getLeft().getKey().equalsIgnoreCase(key)) {
-                    toDeletesParent.setLeft(successor);
+
+                if (deletingRoot) {
+                    root = successor;
                 } else {
-                    toDeletesParent.setRight(successor);
+                    if (toDeletesParent.getLeft().getKey().equalsIgnoreCase(key)) {
+                        toDeletesParent.setLeft(successor);
+                    } else {
+                        toDeletesParent.setRight(successor);
+                    }
                 }
+                
             }
             //Successor is not right child of toDelete
             else {
@@ -211,46 +226,55 @@ public class Tree {
                 successor.setRight(toDelete.getRight());
 
                 //Fix toDeletes parent
-                if (toDeletesParent.getLeft().getKey().equalsIgnoreCase(key)) {
-                    toDeletesParent.setLeft(successor);
+                if (deletingRoot) {
+                    root = successor;
                 } else {
-                    toDeletesParent.setRight(successor);
+                    if (toDeletesParent.getLeft().getKey().equalsIgnoreCase(key)) {
+                        toDeletesParent.setLeft(successor);
+                    } else {
+                        toDeletesParent.setRight(successor);
+                    }
                 }
+                
             }
         }
     }
     
-    private void printNodeKey(TreeNode toPrint, int nodeDepth, boolean rightEdge, boolean leftEdge) {
-        String printString = "";
-        for (int i = 0; i < nodeDepth - 1; i ++) {
-            if (rightEdge || leftEdge) {
-                printString += " \t";
-            } else {
-                printString += "|\t";
-            }
-        }
-        if (nodeDepth != 0) {
-            printString += "|------ ";
-        }
-        printString += toPrint.getKey();
+    private void printNodeKey(TreeNode toPrint, String prefix) {
+        // String printString = "";
+        // for (int i = 0; i < nodeDepth - 1; i ++) {
+        //     if (rightEdge || leftEdge) {
+        //         printString += " \t";
+        //     } else {
+        //         printString += "|\t";
+        //     }
+        // }
+        // if (nodeDepth != 0) {
+        //     printString += "|------ ";
+        // }
+        // printString += toPrint.getKey();
 
-        System.out.println(printString);
+        System.out.println(prefix + " " + toPrint.getKey());
     }
 
-    private void displayTree(TreeNode current, int nodeDepth, boolean rightEdge, boolean leftEdge) {
+    private void displayTree(TreeNode current, String prefix, boolean leftChild) {
         if (current.getRight() != null){
-            displayTree(current.getRight(), nodeDepth + 1, rightEdge, false);
+            if (prefix.length() != 0 && !leftChild) {
+                displayTree(current.getRight(), prefix.substring(0, prefix.length() - 1) + "\t|", false);
+            } else {
+                displayTree(current.getRight(), prefix + "\t|", false);
+            }
         }
         
-        printNodeKey(current, nodeDepth, rightEdge, leftEdge);
+        printNodeKey(current, prefix + "------");
 
         if (current.getLeft() != null) {
-            displayTree(current.getLeft(), nodeDepth + 1, false, leftEdge);
+            displayTree(current.getLeft(), prefix + "\t|", true);
         }
     }
 
     public void display() {
-        displayTree(root, 0, true, true);
+        displayTree(root, "", false);
     }
     
     private int findHeight(TreeNode current) {
@@ -307,13 +331,13 @@ public class Tree {
 
     private String appendNodeKeyInOrder(String currentOutput, TreeNode current) {
         if (current.getLeft() != null){
-            currentOutput = appendNodeKeyInOrder(currentOutput, current.getRight());
+            currentOutput = appendNodeKeyInOrder(currentOutput, current.getLeft());
         }
         
         currentOutput += current.getKey() + "\t";
 
-        if (current.getLeft() != null) {
-            currentOutput = appendNodeKeyInOrder(currentOutput, current.getLeft());
+        if (current.getRight() != null) {
+            currentOutput = appendNodeKeyInOrder(currentOutput, current.getRight());
         }
 
         return currentOutput;
@@ -328,11 +352,11 @@ public class Tree {
         currentOutput += current.getKey() + "\t";
 
         if (current.getLeft() != null){
-            currentOutput = appendNodeKeyInOrder(currentOutput, current.getRight());
+            currentOutput = appendNodeKeyPreOrder(currentOutput, current.getLeft());
         }
 
-        if (current.getLeft() != null) {
-            currentOutput = appendNodeKeyInOrder(currentOutput, current.getLeft());
+        if (current.getRight() != null) {
+            currentOutput = appendNodeKeyPreOrder(currentOutput, current.getRight());
         }
 
         return currentOutput;
@@ -345,11 +369,11 @@ public class Tree {
 
     private String appendNodeKeyPostOrder(String currentOutput, TreeNode current) {
         if (current.getLeft() != null){
-            currentOutput = appendNodeKeyInOrder(currentOutput, current.getRight());
+            currentOutput = appendNodeKeyPostOrder(currentOutput, current.getLeft());
         }
 
-        if (current.getLeft() != null) {
-            currentOutput = appendNodeKeyInOrder(currentOutput, current.getLeft());
+        if (current.getRight() != null) {
+            currentOutput = appendNodeKeyPostOrder(currentOutput, current.getRight());
         }
 
         currentOutput += current.getKey() + "\t";
@@ -359,7 +383,8 @@ public class Tree {
 
     public String keysPostOrder() {
         String keys = "";
-        return appendNodeKeyPostOrder(keys, root);    }
+        return appendNodeKeyPostOrder(keys, root);    
+    }
 
     private int countLeaves(TreeNode current) {
         int total = 0;
