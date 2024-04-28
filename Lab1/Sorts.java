@@ -91,9 +91,11 @@ class Sorts
     public static void mergeSort(int[] A)
     {
     }//mergeSort()
+    @SuppressWarnings("unused")
     private static void mergeSortRecurse(int[] A, int leftIdx, int rightIdx)
     {
     }//mergeSortRecurse()
+    @SuppressWarnings("unused")
     private static void merge(int[] A, int leftIdx, int midIdx, int rightIdx)
     {
     }//merge()
@@ -103,9 +105,11 @@ class Sorts
     public static void quickSort(int[] A)
     {
     }//quickSort()
+    @SuppressWarnings("unused")
     private static void quickSortRecurse(int[] A, int leftIdx, int rightIdx)
     {
     }//quickSortRecurse()
+    @SuppressWarnings("unused")
     private static int doPartitioning(int[] A, int leftIdx, int rightIdx, int pivotIdx)
     {
 		return 0;	// TEMP - Replace this when you implement QuickSort
