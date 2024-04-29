@@ -10,8 +10,10 @@ public class TreeMenu {
         Scanner scanner = new Scanner(System.in);
 
         String[] inputs = {"i q q", "i w w", "i e e", "i r r", "i t t", "i y y", "i u u", "i o o", "i p p", "d tree", "h"};
-        int inputId = 0;
+        int inputId = 100;
         while (true) {
+	  try { 
+
             String input;
 
             if (inputId >= inputs.length) {
@@ -33,7 +35,11 @@ public class TreeMenu {
                 System.out.println("i key data          : Insert node with key and data");
                 System.out.println("r key               : Remove node with key");
                 System.out.println("d tree/in/pre/post  : Display kys as a tree/in order/pre-order/post-order");
-                System.out.println("h                   : Display this help menu");
+                System.out.println("m			: Display min value");
+		System.out.println("n			: Display max value");
+		System.out.println("b			: Display balance as a percentage");
+		System.out.println("h                   : Display this help menu");
+		System.out.println("g			: Display height of the tree");
             } else if (command.equals("i")) {
                 String[] splitInput = input.split(" ");
                 if (splitInput.length < 3) {
@@ -69,10 +75,20 @@ public class TreeMenu {
                     throw new TreeMenuException("display command arguement must be one of (tree, in, pre, post) is: " + splitInput[1]);
                 }
 
-            }else {
+            } else if (command.equals("m")) {
+		System.out.println("Min key is " + tree.min());
+	    } else if (command.equals("n")) {
+		System.out.println("Max key is " + tree.max());	
+	    } else if (command.equals("b")) {
+		System.out.println("Tree balance is: " + tree.balance() + "%");
+	    } else if (command.equals("g")) { 
+	    	System.out.println("Tree height is: " + tree.height());
+	    } else {
                 throw new TreeMenuException("Invalid input: " + input + " is not a recognised command");
             }
-
+	} catch (Exception e) {
+		System.out.println("Exception occurred: " + e);
+	}
         }
     }
 }

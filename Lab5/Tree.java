@@ -153,7 +153,7 @@ public class Tree {
             if (toDelete == root) {
                 root = null;
             } else {
-                if (toDeletesParent.getLeft().getKey().equalsIgnoreCase(key)) {
+                if (toDeletesParent.getLeft() != null && toDeletesParent.getLeft().getKey().equalsIgnoreCase(key)) {
                     toDeletesParent.setLeft(null);
                 } else {
                     toDeletesParent.setRight(null);
@@ -167,7 +167,7 @@ public class Tree {
             if (toDelete == root) {
                 root = null;
             } else {
-                if (toDeletesParent.getLeft().getKey().equalsIgnoreCase(key)) {
+                if (toDeletesParent.getLeft() != null && toDeletesParent.getLeft().getKey().equalsIgnoreCase(key)) {
                     toDeletesParent.setLeft(toDelete.getLeft());
                 } else {
                     toDeletesParent.setRight(toDelete.getLeft());
@@ -181,7 +181,7 @@ public class Tree {
             if (toDelete == root) {
                 root = null;
             } else {
-                if (toDeletesParent.getLeft().getKey().equalsIgnoreCase(key)) {
+                if (toDeletesParent.getLeft() != null && toDeletesParent.getLeft().getKey().equalsIgnoreCase(key)) {
                     toDeletesParent.setLeft(toDelete.getRight());
                 } else {
                     toDeletesParent.setRight(toDelete.getRight());
@@ -282,13 +282,13 @@ public class Tree {
         if (current.getLeft() == null) {
             height = 1;
         } else {
-            height = findHeight(current.getLeft());
+            height = findHeight(current.getLeft()) + 1;
         }
 
         if (current.getRight() == null) {
             //Height is left height
         } else {
-            height = Math.max(height, findHeight(current.getRight()));
+            height = Math.max(height, findHeight(current.getRight()) + 1);
         }
         return height;
     }
@@ -310,7 +310,7 @@ public class Tree {
     }
 
     public Object min() {
-        return findMin(root).getValue();
+        return findMin(root).getKey();
     }
 
     private TreeNode findMax(TreeNode current) {
@@ -319,14 +319,14 @@ public class Tree {
         if (current.getRight() == null) {
             result = current;
         } else {
-            result = findMin(current.getRight());
+            result = findMax(current.getRight());
         }
 
         return result;
     }
 
     public Object max() {
-        return findMax(root).getValue();
+        return findMax(root).getKey();
     }
 
     private String appendNodeKeyInOrder(String currentOutput, TreeNode current) {
@@ -389,7 +389,7 @@ public class Tree {
     private int countLeaves(TreeNode current) {
         int total = 0;
         if (current.getLeft() != null) {
-            total = countLeaves(current.getLeft());
+            total += countLeaves(current.getLeft());
         }
         
         if (current.getRight() != null) {
@@ -414,11 +414,12 @@ public class Tree {
         int treeHeight = height();
 
         if (treeHeight == 1) {
-            output = 100.0;
+            output = 100.1;
         } else {
             int leafCount = countLeaves(root);
-            double maxLeaves = Math.pow(2, treeHeight);
-            output = (leafCount - 1.0) / (maxLeaves - 1);
+            //System.out.println(leafCount);
+	    double maxLeaves = Math.pow(2, treeHeight - 1);
+            output = (leafCount - 1.0) / (maxLeaves - 1) * 100;
         }
 
         return output;
