@@ -35,11 +35,11 @@ public class TreeMenu {
                 System.out.println("i key data          : Insert node with key and data");
                 System.out.println("r key               : Remove node with key");
                 System.out.println("d tree/in/pre/post  : Display kys as a tree/in order/pre-order/post-order");
-                System.out.println("m			: Display min value");
-		System.out.println("n			: Display max value");
-		System.out.println("b			: Display balance as a percentage");
-		System.out.println("h                   : Display this help menu");
-		System.out.println("g			: Display height of the tree");
+                System.out.println("m			        : Display min value");
+                System.out.println("n			        : Display max value");
+                System.out.println("b			        : Display balance as a percentage");
+                System.out.println("h                   : Display this help menu");
+                System.out.println("g			        : Display height of the tree");
             } else if (command.equals("i")) {
                 String[] splitInput = input.split(" ");
                 if (splitInput.length < 3) {
