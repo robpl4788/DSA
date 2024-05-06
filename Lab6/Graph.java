@@ -237,13 +237,17 @@ public class Graph {
     }
 
     void displayAsList () {
-        nodes.setIteratorAtHead();
-        System.out.println("Node:\tConnected To:");
-        do {
-            GraphNode current = (GraphNode) nodes.getIteratorData();
-            System.out.println(current.getKey() + " :\t" + current.getAdjacentKeys());
-        } while (nodes.setIteratorNext());
-        
+        if (nodes.getSize() == 0) {
+		System.out.println("Nothing To Display");
+	} else {
+	
+		nodes.setIteratorAtHead();
+        	System.out.println("Node:\tConnected To:");
+        	do {
+        	    GraphNode current = (GraphNode) nodes.getIteratorData();
+        	    System.out.println(current.getKey() + " :\t" + current.getAdjacentKeys());
+        	} while (nodes.setIteratorNext());
+	}
         
     }
 
