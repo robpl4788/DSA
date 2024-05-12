@@ -7,7 +7,6 @@ import java.io.File;
 public class HashTableMenu {
     private static HashTable table = new HashTable();
     public static void main(String[] args) {
-        @SuppressWarnings("resource")
 
         boolean cont = true;
         Scanner scanner;
