@@ -1,5 +1,8 @@
 package Lab7;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.Math;
 
 public class HashTable {
@@ -19,14 +22,14 @@ public class HashTable {
             return hasData;
         }
 
-        void set(String Key, Object Data) {
+        public void set(String Key, Object Data) {
             key = Key;
             data = Data;
             initialised = true;
             hasData = true;
         }
         
-        void delete() {
+        public void delete() {
             if (hasData == false) {
                 throw new HashTableException("Deleting HashTableEntry that doesn't exist");
             }
@@ -42,7 +45,14 @@ public class HashTable {
         }
     }
 
-    private int tableLength = 11;
+    //Config parameters
+    private int minLength = 11;
+    private double minCapacity = 0.1;
+    private double maxCapacity = 0.5;
+    private double targetCapacity = (minCapacity + maxCapacity) / 2;
+    private double targetMaxStepFraction = 0.25;
+
+    private int tableLength = minLength;
 
     private int size = 0;
     private int entries = 0;
@@ -50,13 +60,6 @@ public class HashTable {
     private HashTableEntry[] table = new HashTableEntry[tableLength];
 
     private int maxStep = 3;
-
-    //Config parameters
-    private int minLength = 11;
-    private double minCapacity = 0.1;
-    private double maxCapacity = 0.5;
-    private double targetCapacity = (minCapacity + maxCapacity) / 2;
-    private double targetMaxStepFraction = 0.25;
 
     public HashTable() {
         for (int i = 0; i < tableLength; i ++) {
@@ -275,6 +278,38 @@ public class HashTable {
         }
 
         return result;
+    }
+
+    public void saveTable() {
+        File out = new File("out.csv");
+
+        try {
+            if (!out.createNewFile()) {
+                out.delete();
+            }
+            FileWriter myWriter = new FileWriter("out.csv");
+
+            for (int i = 0; i < tableLength; i ++) {
+                String output = "";
+                HashTableEntry current = table[i];
+
+                if (current.doesHaveData()) {
+                    output += current.getKey();
+                    output += ",";
+                    output += current.getData();
+                    output += "\n";
+
+
+                    myWriter.write(output);
+                }
+            }
+
+            myWriter.close();
+            System.out.println("Successfully wrote to file.");
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
     }
 
 }

@@ -72,6 +72,7 @@ public class HashTableMenu {
                     System.out.println("hk key           : Check if the table has entry with key");
                     System.out.println("dt               : Display hash table");
                     System.out.println("ds               : Display size of hash table");
+                    System.out.println("sv               : Save hash table to file");                    
                     System.out.println("hp               : Display this help menu");
                 } else if (command.equals("ae")) {
                     String[] splitInput = input.split(" ");
@@ -116,6 +117,8 @@ public class HashTableMenu {
                     table.printTable();
                 } else if (command.equals("ds")) {
                     System.out.println(table.getSize());
+                } else if (command.equals("sv")) {
+                    table.saveTable();
                 } else {
                     throw new HashTableMenuException("Invalid input: " + input + " is not a recognised command");
                 }
