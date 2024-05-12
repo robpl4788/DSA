@@ -42,20 +42,21 @@ public class HashTable {
         }
     }
 
-    int tableLength = 11;
+    private int tableLength = 11;
 
-    int size = 0;
+    private int size = 0;
+    private int entries = 0;
 
-    HashTableEntry[] table = new HashTableEntry[tableLength];
+    private HashTableEntry[] table = new HashTableEntry[tableLength];
 
-    int maxStep = 3;
+    private int maxStep = 3;
 
     //Config parameters
-    int minLength = 11;
-    double minCapacity = 0.1;
-    double maxCapacity = 0.5;
-    double targetCapacity = (minCapacity + maxCapacity) / 2;
-    double targetMaxStepFraction = 0.25;
+    private int minLength = 11;
+    private double minCapacity = 0.1;
+    private double maxCapacity = 0.5;
+    private double targetCapacity = (minCapacity + maxCapacity) / 2;
+    private double targetMaxStepFraction = 0.25;
 
     public HashTable() {
         for (int i = 0; i < tableLength; i ++) {
@@ -101,7 +102,7 @@ public class HashTable {
     }
 
     private void resize() {
-        if (((double)size) / tableLength < minCapacity || ((double)size) / tableLength > maxCapacity) {
+        if (((double) size) / tableLength < minCapacity || ((double) Math.max(size, entries)) / tableLength > maxCapacity) {
             System.out.print("Resizing from ");
             System.out.print(tableLength);
             System.out.print(" to ");
@@ -121,12 +122,13 @@ public class HashTable {
             }
     
             size = 0;
+            entries = 0;
     
             for (int i = 0; i < oldTable.length; i ++) {
                 HashTableEntry current = oldTable[i];
                 if (current.doesHaveData()) {
                     if (size >= getTableLength()) {
-                        throw new HashTableException("Hash table is full");
+                        throw new HashTableException("Hash table is full while resizing, this really shouldn't happen");
                     }
             
                     int index = hash(current.getKey());
@@ -139,7 +141,8 @@ public class HashTable {
                     }
                     table[index].set(current.getKey(), current.getData());
                     
-                    size ++;;
+                    size ++;
+                    entries ++;
                 }
             }
         }
@@ -153,9 +156,8 @@ public class HashTable {
         for (int i = 0; i < toHash.length(); i ++) {
             hashIndex = (hashIndex * 33) + toHash.charAt(i);
         }
-        if (hashIndex < 0) {
-            hashIndex *= -1;
-        }
+
+        hashIndex = Math.abs(hashIndex);
 
         hashIndex %= getTableLength();
         return hashIndex;
@@ -193,8 +195,13 @@ public class HashTable {
                 
                 // System.out.println(index);
             }
+            if (table[index].isInitialised() == false) {
+                entries ++;
+            }
+
             table[index].set(key, data);
             size ++;
+
 
             resize();
     
@@ -224,6 +231,8 @@ public class HashTable {
         int index = hash(key);
         int step = stepHash(key);
 
+        int count = 0;
+
         while (result == null) {
             HashTableEntry current = table[index];
             if (current.isInitialised()) {
@@ -236,6 +245,11 @@ public class HashTable {
             } else {
                 throw new HashTableException("Getting object that does not exist: " + key);
             }
+
+            count ++;
+            if (count == getTableLength()) {
+                throw new HashTableException("Getting object that does not exist: " + key);
+            } 
         }
         return result;
     }
