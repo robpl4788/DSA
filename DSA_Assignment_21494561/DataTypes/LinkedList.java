@@ -1,4 +1,4 @@
-package DSA_Assignment_21494561;
+package DSA_Assignment_21494561.DataTypes;
 
 public class LinkedList {
     public class LinkedListException extends RuntimeException {

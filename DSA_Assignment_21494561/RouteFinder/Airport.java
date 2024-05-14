@@ -1,4 +1,4 @@
-package DSA_Assignment_21494561;
+package DSA_Assignment_21494561.RouteFinder;
 
 public class Airport {
     private String code;
@@ -7,7 +7,7 @@ public class Airport {
     private double longitude;
     private final double degreesToKm = 111.31949;
 
-    protected Airport(String code, String name, double lattitude, double longitude) {
+    public Airport(String code, String name, double lattitude, double longitude) {
         this.code = code;
         this.name = name;
         this.lattitude = lattitude;

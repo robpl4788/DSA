@@ -1,4 +1,4 @@
-package DSA_Assignment_21494561;
+package DSA_Assignment_21494561.DataTypes;
 
 
 //Max heap so higher priority number means higher priority

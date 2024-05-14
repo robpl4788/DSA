@@ -1,4 +1,4 @@
-package DSA_Assignment_21494561;
+package DSA_Assignment_21494561.DataTypes;
 
 public class Graph {
 
@@ -172,11 +172,11 @@ public class Graph {
     LinkedList nodes = new LinkedList();
     int visitedMarker = 0;
 
-    void addNode(String key, Object data) {
+    public void addNode(String key, Object data) {
         nodes.pushBack(new GraphNode(key, data));
     }
 
-    void addDirectedEdge(String keyFrom, String keyTo, int weight) {
+    public void addDirectedEdge(String keyFrom, String keyTo, int weight) {
         GraphNode node1 = findNode(keyFrom);
         GraphNode node2 = findNode(keyTo);
 
@@ -205,7 +205,7 @@ public class Graph {
         return result;
     }
 
-    void deleteNode(String key) {
+    public void deleteNode(String key) {
         nodes.setIteratorAtHead();
         do {
             GraphNode current = (GraphNode) nodes.getIteratorData();
@@ -224,12 +224,12 @@ public class Graph {
         } while (nodes.setIteratorNext());
     }
 
-    void deleteDirectedEdge(String keyFrom, String keyTo) {
+    public void deleteDirectedEdge(String keyFrom, String keyTo) {
         GraphNode from = findNode(keyFrom);
         from.popNeighbour(keyTo);
     }
 
-    boolean hasNode(String key) {
+    public boolean hasNode(String key) {
         boolean result = false;
         if (nodes.getSize() != 0) {
             nodes.setIteratorAtHead();
@@ -246,21 +246,21 @@ public class Graph {
         return result;
         }
 
-    boolean hasEdge(String keyFrom, String keyTo) {
+    public boolean hasEdge(String keyFrom, String keyTo) {
         GraphNode from = findNode(keyFrom);
         return from.hasNeighbour(keyTo);
     }
 
-    int edgeWeight(String keyFrom, String keyTo) {
+    public int edgeWeight(String keyFrom, String keyTo) {
         GraphNode from = findNode(keyFrom);
         return from.getEdgeWeight(keyTo);
     }
 
-    int nodeCount () {
+    public int nodeCount () {
         return nodes.getSize();
     }
 
-    int edgeCount () {
+    public int edgeCount () {
         int edges = 0;
         if (nodeCount() != 0) {
             nodes.setIteratorAtHead();
@@ -271,36 +271,31 @@ public class Graph {
         return edges;
     }
 
-    Object getData(String key) {
+    public Object getData(String key) {
         return findNode(key).getData();
     }
 
-    String getAdjacentKeys(String key) {
+    public String getAdjacentKeys(String key) {
         GraphNode node = findNode(key);
         return node.getAdjacentKeys();
     }
 
-    boolean isAdjacent(String keyFrom, String keyTo) {
-        GraphNode from = findNode(keyFrom);
-        return from.hasNeighbour(keyTo);
-    }
-
-    void displayAsList () {
+    public void displayAsList () {
         if (nodes.getSize() == 0) {
 		System.out.println("Nothing To Display");
-	} else {
-	
-		nodes.setIteratorAtHead();
-        	System.out.println("Node:\tConnected To:");
-        	do {
-        	    GraphNode current = (GraphNode) nodes.getIteratorData();
-        	    System.out.println(current.getKey() + " :\t Connected to " + current.edgeCount() + " nodes:\t" + current.getAdjacentKeys());
-        	} while (nodes.setIteratorNext());
-	}
+        } else {
         
+            nodes.setIteratorAtHead();
+                System.out.println("Node:\tConnected To:");
+                do {
+                    GraphNode current = (GraphNode) nodes.getIteratorData();
+                    System.out.println(current.getKey() + " :\t Connected to " + current.edgeCount() + " nodes:\t" + current.getAdjacentKeys());
+                } while (nodes.setIteratorNext());
+        }
+            
     }
 
-    void displayAsMatrix() {
+    public void displayAsMatrix() {
         String nodeKeys = "\t";
 
         if (nodeCount() == 0) {
@@ -356,7 +351,7 @@ public class Graph {
         return result;
     }
 
-    String depthFirstKeys(String keyFrom) {
+    public String depthFirstKeys(String keyFrom) {
         visitedMarker += 1;
         GraphNode start = findNode(keyFrom);
 
@@ -365,7 +360,7 @@ public class Graph {
         return result;
     }
 
-    String breadthFirstKeys(String keyFrom) {
+    public String breadthFirstKeys(String keyFrom) {
         visitedMarker += 1;
 
         GraphNode start = findNode(keyFrom);

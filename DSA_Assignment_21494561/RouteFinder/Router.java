@@ -1,14 +1,16 @@
-package DSA_Assignment_21494561;
+package DSA_Assignment_21494561.RouteFinder;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-import DSA_Assignment_21494561.HashTable.HashTableException;
+import DSA_Assignment_21494561.DataTypes.Graph;
+import DSA_Assignment_21494561.DataTypes.HashTable;
+import DSA_Assignment_21494561.DataTypes.HashTable.HashTableException;
 
 //Uses data from openflights, downloaded 13-May-2024, https://openflights.org/data.php
 
-public class RouteFinder {
+public class Router {
 
     int counter = 0;
 
@@ -24,18 +26,20 @@ public class RouteFinder {
 
     int count = 0;
 
-    public RouteFinder() {
+    public Router() {
         airports = new HashTable();
         routes = new Graph();
 
         readInAllAirports();
 
         readInFlights();
+
+        routes.displayAsList();
     }
 
     private void readInAllAirports() {
         Scanner scanner = new Scanner(System.in);
-        File airportFile = new File("DSA_Assignment_21494561\\airports.csv");
+        File airportFile = new File("DSA_Assignment_21494561\\RouteFinder\\airports.csv");
         try {
             scanner = new Scanner(airportFile);
 
@@ -99,9 +103,10 @@ public class RouteFinder {
 
     }
 
+    //Reads in valid flights operated by Qantas(QF), British Airways(BA) or Spirit(NK)
     private void readInFlights() {
         Scanner scanner = new Scanner(System.in);
-        File routeFile = new File("DSA_Assignment_21494561\\routes.csv");
+        File routeFile = new File("DSA_Assignment_21494561\\RouteFinder\\routes.csv");
         try {
             scanner = new Scanner(routeFile);
 
@@ -208,6 +213,6 @@ public class RouteFinder {
         return result;
     }
 
-    
+
 
 }
