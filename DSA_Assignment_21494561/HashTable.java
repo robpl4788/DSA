@@ -1,4 +1,4 @@
-package Lab7;
+package DSA_Assignment_21494561;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -6,6 +6,12 @@ import java.io.IOException;
 import java.lang.Math;
 
 public class HashTable {
+    public class HashTableException extends RuntimeException {
+        public HashTableException(String s) {
+            super(s);
+        }
+    }
+    
     private class HashTableEntry {
         String key;
         Object data;

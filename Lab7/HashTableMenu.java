@@ -27,6 +27,7 @@ public class HashTableMenu {
             scanner = new Scanner(System.in);
         }
 
+//671,"Katowice International Airport","Katowice","Poland","KTW","EPKT",50.4743,19.08,995,1,"E","Europe/Warsaw","airport","OurAirports
         
         while (cont) {
             try{
