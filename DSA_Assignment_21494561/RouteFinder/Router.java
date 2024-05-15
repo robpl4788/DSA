@@ -5,7 +5,9 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 import DSA_Assignment_21494561.DataTypes.Graph;
+import DSA_Assignment_21494561.DataTypes.LinkedList;
 import DSA_Assignment_21494561.DataTypes.HashTable;
+import DSA_Assignment_21494561.DataTypes.Heap;
 import DSA_Assignment_21494561.DataTypes.HashTable.HashTableException;
 
 //Uses data from openflights, downloaded 13-May-2024, https://openflights.org/data.php
@@ -34,7 +36,93 @@ public class Router {
 
         readInFlights();
 
-        routes.displayAsList();
+        // routes.displayAsList(); 
+
+        printAllRoutes("PER", "ATL", 4, false);
+        // allRoutes = routes.breadthFirstKeyList("PER", "ASP", 1);
+        // printAllRoutes(allRoutes);
+        // allRoutes = routes.breadthFirstKeyList("ASP", "SYD", 1);
+        // printAllRoutes(allRoutes);
+    }
+
+    private void printAllRoutes(String codeFrom, String codeTo, int maxDepth, boolean sortByDistance) {
+        LinkedList allRoutes = routes.breadthFirstKeyList(codeFrom, codeTo, maxDepth);
+
+        if (sortByDistance) {
+            allRoutes = sortAllRoutesByDistance(allRoutes);
+        } else {
+            allRoutes = sortAllRoutesByLayover(allRoutes, maxDepth);
+        }
+
+        int routeCount = allRoutes.getSize();
+        String fromName = ((Airport) airports.getElement(codeFrom)).getName();
+        String toName = ((Airport) airports.getElement(codeTo)).getName();
+
+        System.out.println("Found " + routeCount + " routes between " + fromName + " (" + codeFrom + ") and " + toName + " (" + codeTo + ")");
+
+        allRoutes.setIteratorAtHead();
+
+        do {
+            LinkedList currentPath = (LinkedList) allRoutes.getIteratorData();
+            currentPath.setIteratorAtHead();
+
+            String pathString = "Length: ";
+            pathString += (int) currentPath.getIteratorData();
+            pathString += " km  \tLayovers: ";
+            pathString += (currentPath.getSize() - 2);
+            pathString += "\tRoute: ";
+            currentPath.setIteratorNext();
+
+            do {
+                pathString += currentPath.getIteratorData();
+                pathString += " -> ";
+            } while (currentPath.setIteratorNext());
+            pathString = pathString.substring(0, pathString.length() - 4);
+            System.out.println(pathString);
+        } while (allRoutes.setIteratorNext());
+    }
+
+
+    private LinkedList sortAllRoutesByLayover(LinkedList allRoutes, int maxDepth) {
+        Heap[] routeHeapArray = new Heap[maxDepth + 2];
+        for (int i = 0; i < maxDepth + 2; i ++) {
+            routeHeapArray[i] = new Heap(allRoutes.getSize());
+        }
+
+        allRoutes.setIteratorAtHead();
+        do {
+            LinkedList currentRoute = (LinkedList) allRoutes.getIteratorData();
+            int length = currentRoute.getSize() - 1;
+            routeHeapArray[length].add(((int) currentRoute.peekFront()), currentRoute);
+        } while (allRoutes.setIteratorNext());
+
+        LinkedList newRoutes = new LinkedList();
+
+        for (int i = maxDepth + 2 - 1; i >= 0; i --) {
+            while (routeHeapArray[i].getSize() != 0) {
+                newRoutes.pushFront(routeHeapArray[i].pull());
+            }
+        }
+        
+
+        return newRoutes;
+    }
+
+    private LinkedList sortAllRoutesByDistance(LinkedList allRoutes) {
+        Heap routeHeap = new Heap(allRoutes.getSize());
+        allRoutes.setIteratorAtHead();
+        do {
+            LinkedList currentRoute = (LinkedList) allRoutes.getIteratorData();
+            routeHeap.add(((int) currentRoute.peekFront()) * 100 + currentRoute.getSize(), currentRoute);
+        } while (allRoutes.setIteratorNext());
+
+        LinkedList newRoutes = new LinkedList();
+
+        while (routeHeap.getSize() != 0) {
+            newRoutes.pushFront(routeHeap.pull());
+        }
+
+        return newRoutes;
     }
 
     private void readInAllAirports() {
@@ -121,7 +209,7 @@ public class Router {
             }
 
             System.out.println("Airports: " + routes.nodeCount());
-            System.out.println("Routes: " + routes.edgeCount());
+            System.out.println("Flights: " + routes.edgeCount());
             
         } catch (FileNotFoundException e) {
             scanner.close();

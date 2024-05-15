@@ -40,6 +40,7 @@ public class Airport {
             //Assume pythagorean distance works fine on a sphere
             result = Math.pow(getLattitude() - other.getLattitude(), 2);
             result += Math.pow(getLongitude() - other.getLongitude(), 2);
+           result = Math.sqrt(result);
             result *= degreesToKm;
         }
 

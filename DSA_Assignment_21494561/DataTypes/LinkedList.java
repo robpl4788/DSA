@@ -54,6 +54,16 @@ public class LinkedList {
     private int size = 0;
     private ListNode iterator = null;
 
+    //Will create a linked list withthe same data in the same order as copy
+    public LinkedList (LinkedList copy) {
+        copy.setIteratorAtHead();
+        do {
+            pushBack(copy.getIteratorData());
+        } while (copy.setIteratorNext());
+    }
+    
+    public LinkedList () {}
+
     public boolean isEmpty() {
         return size == 0;
     }

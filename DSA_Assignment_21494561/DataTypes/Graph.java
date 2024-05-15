@@ -1,5 +1,6 @@
 package DSA_Assignment_21494561.DataTypes;
 
+
 public class Graph {
 
     public class GraphException extends RuntimeException {
@@ -29,7 +30,6 @@ public class Graph {
         }
         String key;
         Object data;
-        int visited = 0;
         LinkedList neighbours;  //List of neighbours with keys in order
 
         
@@ -133,26 +133,23 @@ public class Graph {
             return neighbours.getSize();
         }
     
-        int getVisited() {
-            return visited;
-        }
-
-        void setVisited(int setTo) {
-            visited = setTo;
-        }
 
 
         int getEdgeWeight(String keyTo) {
 
             boolean hasNeighbour = false;
             int edgeWeight = 0;
+            // System.out.println("Looking for: " + keyTo);
+
             if (neighbours.getSize() != 0) {
                 // System.out.println("");
 
                 neighbours.setIteratorAtHead();
                 do {
                     GraphEdge currentEdge = (GraphEdge) neighbours.getIteratorData();
-                    if (currentEdge.getDestination().getKey().equals(key)) {
+                    // System.out.println(currentEdge.getDestination().getKey());
+
+                    if (currentEdge.getDestination().getKey().equals(keyTo)) {
                         if (hasNeighbour) {
                             throw new GraphException("Two copies of edge exist");
                         }
@@ -170,7 +167,6 @@ public class Graph {
     }
 
     LinkedList nodes = new LinkedList();
-    int visitedMarker = 0;
 
     public void addNode(String key, Object data) {
         nodes.pushBack(new GraphNode(key, data));
@@ -295,98 +291,64 @@ public class Graph {
             
     }
 
-    public void displayAsMatrix() {
-        String nodeKeys = "\t";
+    // Returns a linked list of valid routes represented as linked lists, the first element of each is the total distance of the route, followed by the key path to follow
+    public LinkedList breadthFirstKeyList(String keyFrom, String keyTo, int maxDepth) {
 
-        if (nodeCount() == 0) {
-            System.out.println("Nothing to display");
-        } else {
-
-            System.out.println("Adjacency Matrix:");
-            nodes.setIteratorAtHead();
-            do {
-                nodeKeys += ((GraphNode) nodes.getIteratorData()).getKey();
-                nodeKeys += "\t";
-            } while (nodes.setIteratorNext());
-            
-            System.out.println(nodeKeys);
-            nodeKeys = nodeKeys.substring(1);
-            String[] nodeKeyArray = (nodeKeys.split("\t"));
-
-            for (int i = 0; i < nodeCount();  i ++) {
-                System.out.print(nodeKeyArray[i]);
-                for (int j = 0; j < nodeCount();  j ++) {
-                    boolean hasNeighbour = ((GraphNode) nodes.peekIndex(i)).hasNeighbour(nodeKeyArray[j]);
-                    if (hasNeighbour) {
-                        System.out.print("\t1");
-                    } else {
-                        System.out.print("\t0");
-                    }
-                }
-                System.out.print("\n");
-            }
-
+        if (hasNode(keyFrom) == false || hasNode(keyTo) == false) {
+            throw new GraphException("Searching for path between one or more non-existent node, Frome: " + keyFrom + " To: " + keyTo);
         }
-    }
 
-    private String depthFirst(GraphNode current) {
-        String result = "";
-        result += current.getKey();
-        result += "\t";
-
-        current.setVisited(visitedMarker);
-
-
-        if (current.neighbours.getSize() != 0) {
-            current.neighbours.setIteratorAtHead();
-            do {
-                GraphNode iteratorNode = (GraphNode) current.neighbours.getIteratorData();
-                if (iteratorNode.getVisited() != visitedMarker) {
-                    result += depthFirst(iteratorNode);
-                }
-            } while (current.neighbours.setIteratorNext());
+        if (keyFrom.equals(keyTo)) {
+            throw new GraphException("Searching for path between the same node: " + keyFrom);
         }
-        
 
-        return result;
-    }
-
-    public String depthFirstKeys(String keyFrom) {
-        visitedMarker += 1;
-        GraphNode start = findNode(keyFrom);
-
-        String result = depthFirst(start);
-
-        return result;
-    }
-
-    public String breadthFirstKeys(String keyFrom) {
-        visitedMarker += 1;
-
-        GraphNode start = findNode(keyFrom);
-
-        String result = "";
+        LinkedList allPaths = new LinkedList();
 
         LinkedList toSearchFrom = new LinkedList();
-        start.setVisited(visitedMarker);
-        toSearchFrom.pushFront(start);
+
+        LinkedList initialPath = new LinkedList();
+        initialPath.pushFront(0);
+        initialPath.pushBack(keyFrom);
+
+        toSearchFrom.pushFront(initialPath);
 
         while (toSearchFrom.getSize() != 0) {
-            GraphNode current = (GraphNode) toSearchFrom.popFront();
-            
-            result += current.getKey();
-            result += "\t";
+            LinkedList currentPath = (LinkedList) toSearchFrom.popFront();
+            String currentKey = (String) currentPath.peekBack();
+            GraphNode currentNode = findNode(currentKey);
+            if (currentNode.getKey().equals(keyTo)) {
+                allPaths.pushBack(currentPath);
+            } else if (currentPath.getSize() <= maxDepth + 1) {
+                for (int i = 1; i < currentNode.neighbours.getSize(); i ++) {
+                    GraphNode mightSearch = ((GraphNode.GraphEdge) currentNode.neighbours.peekIndex(i)).getDestination();
+                    String mightSearchKey = mightSearch.getKey();
 
-            for (int i = 0; i < current.neighbours.getSize(); i ++) {
-                GraphNode mightSearch = (GraphNode) current.neighbours.peekIndex(i);
-                if (mightSearch.getVisited() != visitedMarker) {
-                    toSearchFrom.pushBack(mightSearch);
-                    mightSearch.setVisited(visitedMarker);
+                    currentPath.setIteratorAtHead();
+                    currentPath.setIteratorNext();
+                    boolean thisPathAlreadyVisited = false;
+                    do {
+                        
+                        if (mightSearchKey.equals((String) currentPath.getIteratorData())) {
+                            thisPathAlreadyVisited = true;
+                            // System.out.println(mightSearchKey + " = " +  currentPath.getIteratorData());
+                        } //else {
+                            // System.out.println(mightSearchKey + " != " +  currentPath.getIteratorData());
+                        // }
+                    } while (currentPath.setIteratorNext());
+                    
+                    if (thisPathAlreadyVisited == false) {
+                        LinkedList newPath = new LinkedList(currentPath);
+                        newPath.pushBack(mightSearchKey);
+                        newPath.pushFront((int) newPath.popFront() + currentNode.getEdgeWeight(mightSearchKey));
+                        toSearchFrom.pushBack(newPath);
+                    }
                 }
             }
+
+            
         }   
 
-        return result;
+        return allPaths;
     }
     
 }

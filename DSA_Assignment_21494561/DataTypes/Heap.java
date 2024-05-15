@@ -93,6 +93,7 @@ public class Heap {
         }
         size --;
 
+        // System.out.println(entries[0].getPriority());
         Object result = entries[0].pop();
         entries[0].swap(entries[size]);
         trickleDown(0);

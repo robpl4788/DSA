@@ -112,9 +112,9 @@ public class HashTable {
 
     private void resize() {
         if (((double) size) / tableLength < minCapacity || ((double) Math.max(size, entries)) / tableLength > maxCapacity) {
-            System.out.print("Resizing from ");
-            System.out.print(tableLength);
-            System.out.print(" to ");
+            // System.out.print("Resizing from ");
+            // System.out.print(tableLength);
+            // System.out.print(" to ");
             HashTableEntry[] oldTable = table;
 
             tableLength = nextPrime((int)(size / targetCapacity));
@@ -122,7 +122,7 @@ public class HashTable {
                 tableLength = minLength;
             }
 
-            System.out.println(tableLength);
+            // System.out.println(tableLength);
             maxStep = nextPrime((int)(tableLength * targetMaxStepFraction));
     
             table = new HashTableEntry[tableLength];
