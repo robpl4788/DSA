@@ -351,4 +351,19 @@ public class Graph {
         return allPaths;
     }
     
+    public LinkedList getAllKeys() {
+        LinkedList allKeys = new LinkedList();
+
+        if (nodeCount() != 0) {
+            nodes.setIteratorAtHead();
+            do {
+                GraphNode current = (GraphNode) nodes.getIteratorData();
+                allKeys.pushBack(current.getKey());
+            } while (nodes.setIteratorNext());
+        }
+
+        
+
+        return allKeys;
+    }
 }

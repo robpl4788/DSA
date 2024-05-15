@@ -16,6 +16,7 @@ public class HashTable {
         String key;
         Object data;
 
+
         boolean initialised = false;
         boolean hasData = false;
         
@@ -239,7 +240,6 @@ public class HashTable {
 
         int index = hash(key);
         int step = stepHash(key);
-
         int count = 0;
 
         while (result == null) {
@@ -317,5 +317,4 @@ public class HashTable {
             e.printStackTrace();
         }
     }
-
 }

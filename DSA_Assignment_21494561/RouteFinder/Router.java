@@ -16,8 +16,8 @@ public class Router {
 
     int counter = 0;
 
-    public class RouteFinderException extends RuntimeException {
-        private RouteFinderException(String s) {
+    public class RouterException extends RuntimeException {
+        private RouterException(String s) {
             super(s);
         }
     }
@@ -36,16 +36,35 @@ public class Router {
 
         readInFlights();
 
+        LinkedList useAirportCodes = routes.getAllKeys();
+        HashTable usedAirports = new HashTable();
+
+        useAirportCodes.setIteratorAtHead();
+        do {
+            String currentCode = (String) useAirportCodes.getIteratorData();
+            usedAirports.addElement(currentCode, airports.getElement(currentCode));
+        } while (useAirportCodes.setIteratorNext());
+
+        airports = usedAirports;
+
+        printAirportInfo("PER");
+
         // routes.displayAsList(); 
 
-        printAllRoutes("PER", "ATL", 4, false);
+        // printAllRoutes("PER", "CDG", 4, false);
         // allRoutes = routes.breadthFirstKeyList("PER", "ASP", 1);
         // printAllRoutes(allRoutes);
         // allRoutes = routes.breadthFirstKeyList("ASP", "SYD", 1);
         // printAllRoutes(allRoutes);
     }
 
-    private void printAllRoutes(String codeFrom, String codeTo, int maxDepth, boolean sortByDistance) {
+    public void printAllRoutes(String codeFrom, String codeTo, int maxDepth, boolean sortByDistance) {
+        if (hasAirport(codeFrom) == false) {
+            throw new RouterException("Looking for route from node that doesn't exist: " + codeFrom);
+        } else if (hasAirport(codeTo) == false) {
+            throw new RouterException("Looking for route from to that doesn't exist: " + codeTo);
+        }
+
         LinkedList allRoutes = routes.breadthFirstKeyList(codeFrom, codeTo, maxDepth);
 
         if (sortByDistance) {
@@ -82,6 +101,21 @@ public class Router {
         } while (allRoutes.setIteratorNext());
     }
 
+    public void printAirportInfo(String code) {
+        if (hasAirport(code) == false) {
+            System.out.println(code + " is not a known airport");
+        } else {
+            Airport printing = (Airport) airports.getElement(code);
+            String toPrint = code;
+            toPrint += ": ";
+            toPrint += printing.getName();
+            System.out.println(toPrint);
+        }
+    }
+
+    public boolean hasAirport(String code) {
+        return airports.hasKey(code);
+    }
 
     private LinkedList sortAllRoutesByLayover(LinkedList allRoutes, int maxDepth) {
         Heap[] routeHeapArray = new Heap[maxDepth + 2];
@@ -133,7 +167,7 @@ public class Router {
 
             if (!scanner.hasNextLine()) {
                 scanner.close();
-                throw new RouteFinderException("Airport file is empty");
+                throw new RouterException("Airport file is empty");
             }
 
             count = 0;
@@ -167,7 +201,7 @@ public class Router {
         String[] split = raw.split(",");
 
         if (split.length != 14) {
-            throw new RouteFinderException("Airport entry invalid at line: " + (count + 1));
+            throw new RouterException("Airport entry invalid at line: " + (count + 1));
         }
 
        
@@ -200,7 +234,7 @@ public class Router {
 
             if (!scanner.hasNextLine()) {
                 scanner.close();
-                throw new RouteFinderException("Route file is empty");
+                throw new RouterException("Route file is empty");
             }
 
             count = 0;
@@ -282,17 +316,11 @@ public class Router {
         
         if (sourceKey.length() != 3 && destinationKey.length() != 3) {
             result = false;
-        }
-
-        if (airline.equals("QF") == false && airline.equals("BA") == false && airline.equals("NK") == false) {
+        } else if (airline.equals("QF") == false && airline.equals("BA") == false && airline.equals("NK") == false) {
             result = false;
-        }
-
-        if (airports.hasKey(sourceKey) == false || airports.hasKey(destinationKey) == false) {
+        } else if (airports.hasKey(sourceKey) == false || airports.hasKey(destinationKey) == false) {
             result = false;
-        }
-        
-        if (routes.hasNode(sourceKey) && routes.hasNode(destinationKey)) {
+        } else if (routes.hasNode(sourceKey) && routes.hasNode(destinationKey)) {
             if (routes.hasEdge(sourceKey, destinationKey)) {
                 result = false;
             } 
