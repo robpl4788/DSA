@@ -47,7 +47,7 @@ public class Router {
 
         airports = usedAirports;
 
-        printAirportInfo("PER");
+        // printAirportInfo("PER");
 
         // routes.displayAsList(); 
 
@@ -58,7 +58,7 @@ public class Router {
         // printAllRoutes(allRoutes);
     }
 
-    public void printAllRoutes(String codeFrom, String codeTo, int maxDepth, boolean sortByDistance) {
+    public void printRoutes(String codeFrom, String codeTo, int maxDepth, boolean sortByDistance) {
         if (hasAirport(codeFrom) == false) {
             throw new RouterException("Looking for route from node that doesn't exist: " + codeFrom);
         } else if (hasAirport(codeTo) == false) {
@@ -68,7 +68,7 @@ public class Router {
         LinkedList allRoutes = routes.breadthFirstKeyList(codeFrom, codeTo, maxDepth);
 
         if (sortByDistance) {
-            allRoutes = sortAllRoutesByDistance(allRoutes);
+            allRoutes = quickSortRoutesByDistance(allRoutes);
         } else {
             allRoutes = sortAllRoutesByLayover(allRoutes, maxDepth);
         }
@@ -79,13 +79,19 @@ public class Router {
 
         System.out.println("Found " + routeCount + " routes between " + fromName + " (" + codeFrom + ") and " + toName + " (" + codeTo + ")");
 
+        if (routeCount > 20) {
+            System.out.println("Displaying the top 20 routes");
+        }
+
         allRoutes.setIteratorAtHead();
+
+        int i = 1;
 
         do {
             LinkedList currentPath = (LinkedList) allRoutes.getIteratorData();
             currentPath.setIteratorAtHead();
 
-            String pathString = "Length: ";
+            String pathString = i + ": Length: ";
             pathString += (int) currentPath.getIteratorData();
             pathString += " km  \tLayovers: ";
             pathString += (currentPath.getSize() - 2);
@@ -98,6 +104,12 @@ public class Router {
             } while (currentPath.setIteratorNext());
             pathString = pathString.substring(0, pathString.length() - 4);
             System.out.println(pathString);
+
+            i ++;
+
+            if (i > 20) {
+                allRoutes.setIteratorAtTail();
+            }
         } while (allRoutes.setIteratorNext());
     }
 
@@ -158,6 +170,160 @@ public class Router {
 
         return newRoutes;
     }
+
+    // Sorts from largest to smallest
+    private LinkedList mergeSortRoutesByDistance(LinkedList allRoutes) {
+
+        Object[] routeArray = allRoutes.asArray();
+
+        merge(0, routeArray.length, routeArray);
+
+        LinkedList sorted = new LinkedList();
+
+        for (int i = 0; i < routeArray.length; i ++) {
+            sorted.pushFront(routeArray[i]);
+        }
+
+        return sorted;
+    }
+
+    // Start include, stop excluded
+    private void merge(int start, int stop, Object[] routesToSort) {
+
+        
+        if (stop == 0) {
+            throw new RouterException("Lol");
+        }
+        if (stop - start > 1) {
+            int mid = (start + stop) / 2;
+            
+            merge(start, mid, routesToSort);
+            merge(mid, stop, routesToSort);
+            
+            Object leftArray[] = new Object[mid - start];
+            for (int i = start; i < mid; i ++) {
+                leftArray[i - start] = routesToSort[i];
+            }
+            
+            Object rightArray[] = new Object[stop - mid];
+            for (int i = mid; i < stop; i ++) {
+                rightArray[i - mid] = routesToSort[i];
+            }
+            System.out.println(start + " " + stop + " " + (stop - start));
+            
+            int leftIndex = 0;
+            int rightIndex = 0;
+            int arrayIndex = start;
+
+            while (arrayIndex < stop) {
+                // System.out.println("Li: " + leftIndex + " Ri: " + rightIndex + " Ai: " + arrayIndex);
+                
+                if (leftIndex < leftArray.length && rightIndex < rightArray.length) {
+                    LinkedList leftCurrent = (LinkedList) leftArray[leftIndex];
+                    LinkedList rightCurrent = (LinkedList) rightArray[rightIndex];
+    
+                    if (getRouteDistance(leftCurrent) > getRouteDistance(rightCurrent)) {
+                        System.out.println(getRouteDistance(leftCurrent));
+                        routesToSort[arrayIndex] = leftCurrent;
+                        leftIndex ++;
+                    } else {
+                        System.out.println(getRouteDistance(rightCurrent));
+                        routesToSort[arrayIndex] = rightCurrent;
+                        rightIndex ++;
+                    }
+                } else if (leftIndex < leftArray.length && rightIndex >= rightArray.length){
+                    LinkedList leftCurrent = (LinkedList) leftArray[leftIndex];
+                    routesToSort[arrayIndex] = leftCurrent;
+                    System.out.println(getRouteDistance(leftCurrent));
+                    leftIndex ++;
+                    
+                } else if (leftIndex >= leftArray.length && rightIndex < rightArray.length){
+                    LinkedList rightCurrent = (LinkedList) rightArray[rightIndex];
+                    
+                    System.out.println(getRouteDistance(rightCurrent));
+                    routesToSort[arrayIndex] = rightCurrent;
+                    rightIndex ++;
+                } else {
+                    throw new RouterException("Merge sort, I'm so sure this won't happen, no idea how it could happen");
+                }
+
+
+                arrayIndex ++;
+
+            }
+        }
+
+    }
+
+
+    private LinkedList quickSortRoutesByDistance(LinkedList allRoutes) {
+        Object[] routeArray = allRoutes.asArray();
+
+        quick(0, routeArray.length, routeArray);
+
+        LinkedList sorted = new LinkedList();
+
+        for (int i = 0; i < routeArray.length; i ++) {
+            sorted.pushFront(routeArray[i]);
+        }
+
+        return sorted;
+    }
+
+    private void quick(int start, int stop, Object[] routesToSort) {
+        // System.out.println(start + " " + stop);
+        if (stop - start > 1) {
+            LinkedList pivotRoute = (LinkedList) routesToSort[stop - 1];
+            int pivot = getRouteDistance(pivotRoute);
+            LinkedList moreThan = new LinkedList(); 
+            LinkedList lessThan = new LinkedList(); // or equal
+
+            int i;
+            for (i = start; i < stop - 1; i ++) {
+                LinkedList current = (LinkedList) routesToSort[i];
+                if (getRouteDistance(current) <= pivot) {
+                    lessThan.pushBack(current);
+                } else {
+                    moreThan.pushBack(current);
+                }
+
+            }
+
+            i = start;
+            while (moreThan.getSize() > 0) {
+                // System.out.println(i);
+                routesToSort[i] = moreThan.popFront();
+                i ++;
+            }
+            int pivotIndex = i;
+            routesToSort[i] = pivotRoute;
+            i ++;
+            
+            while (lessThan.getSize() > 0) {
+                routesToSort[i] = lessThan.popFront();
+                i ++;
+            }
+
+            
+            if (i != stop) {
+                throw new RouterException("Quick sort lost or gained an element unexpectedly");
+            }
+
+            // double ratio = ((double) (pivotIndex - start)) / (stop - start) ;
+            // System.out.println(ratio);
+            quick(start, pivotIndex, routesToSort);
+            quick(pivotIndex + 1, stop, routesToSort);
+            }
+    
+    }
+
+
+
+    private int getRouteDistance(LinkedList route) {
+        return (int) route.peekFront();
+    }
+
+
 
     private void readInAllAirports() {
         Scanner scanner = new Scanner(System.in);
@@ -242,8 +408,7 @@ public class Router {
                 addRoute(scanner.nextLine());
             }
 
-            System.out.println("Airports: " + routes.nodeCount());
-            System.out.println("Flights: " + routes.edgeCount());
+            System.out.println("Loaded in " + routes.nodeCount() + " airports and " + routes.edgeCount() + " flights");
             
         } catch (FileNotFoundException e) {
             scanner.close();

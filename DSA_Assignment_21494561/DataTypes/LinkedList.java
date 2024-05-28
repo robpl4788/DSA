@@ -256,4 +256,23 @@ public class LinkedList {
         iterator = null;
         return toDelete;
     }
+
+    public Object[] asArray() {
+        if (size == 0) {
+            throw new LinkedListException("Getting linked list as an array");
+        }
+
+
+        Object[] array = new Object[size];
+
+        setIteratorAtHead();
+        int i = 0;
+        do {
+            array[i] = getIteratorData();
+            i ++;
+        } while (setIteratorNext());
+
+
+        return array;
+    }
 }
