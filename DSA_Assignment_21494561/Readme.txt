@@ -6,10 +6,15 @@ A system to find and sort routes between airports.
 ReadMe.md                   - Overview of all files
 RouteFinderMenu.java        - Implements a user interface to find and display the desired routes
 TestData.txt                - Some basic info on running the program with example inputs and outputs
+Report.docx                 - Report on the design and implementation of the code
+result.csv                  - Raw csv timing results of different sorting algorithms
+Sorting Times.xlsx          - Excel file with cleaned up and data and graph of different sorting algorithm times
+
 RouteFinder/Router.java     - Loads in airports and routes, then enables searching of both
 RouteFinder/Airport.java    - Object to store and use airport data
 RouteFinder/airports.csv    - List of airports to import, downloaded from: https://openflights.org/data.php
 RouteFinder/routes.csv      - List of flights to import, downloaded from: https://openflights.org/data.php
+
 DataTypes/Graph.Java        - Generic Graph Data Type
 DataTypes/HashTable.java    - Generic Hash Table Data Type
 DataTypes/Heap.java         - Generic Heap Data Type

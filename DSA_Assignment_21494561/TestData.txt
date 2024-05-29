@@ -9,7 +9,7 @@ LHR - London Heathrow Airport
 LGW - London Gatwick Airport
 ATL - Hartsfield Jackson Atlanta International Airport
 
-To run the code, compile and run RouteFinderMenu.java
+To run the code, compile and run RouteFinderMenu.java from the DSA_Assignment_21494561 directory
 
 To find the name of an airport from it's code type "aprt" followed 
     by the 3 letter IATA code.
