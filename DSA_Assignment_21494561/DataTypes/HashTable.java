@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.Math;
+import java.util.Random;
 
 public class HashTable {
     public class HashTableException extends RuntimeException {
@@ -286,35 +287,20 @@ public class HashTable {
         return result;
     }
 
-    public void saveTable() {
-        File out = new File("Lab7\\out.csv");
+    public Object randomEntry() {
+        Random rand = new Random();
 
-        try {
-            if (!out.createNewFile()) {
-                out.delete();
+        int i = rand.nextInt(tableLength);
+
+        while (table[i].hasData == false) {
+            i ++;
+            if (i >= tableLength) {
+                i = 0;
             }
-            FileWriter myWriter = new FileWriter("Lab7\\out.csv");
-
-            for (int i = 0; i < tableLength; i ++) {
-                String output = "";
-                HashTableEntry current = table[i];
-
-                if (current.doesHaveData()) {
-                    output += current.getKey();
-                    output += ",";
-                    output += current.getData();
-                    output += "\n";
-
-
-                    myWriter.write(output);
-                }
-            }
-
-            myWriter.close();
-            System.out.println("Successfully wrote to file.");
-        } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
         }
+
+        Object result = table[i].getData();
+
+        return result;
     }
 }

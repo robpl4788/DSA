@@ -3,10 +3,17 @@ package DSA_Assignment_21494561;
 import java.util.Scanner;
 
 import DSA_Assignment_21494561.RouteFinder.Router;
-import Lab6.GraphMenuException;
-
 
 public class RouteFinderMenu {
+
+    
+    public static class RouterFinderException extends RuntimeException {
+        private RouterFinderException(String s) {
+            super(s);
+        }
+    }
+
+
     public static void main(String[] args) {
         Router routeFinder = new Router();
         
@@ -16,6 +23,8 @@ public class RouteFinderMenu {
 
         String[] inputs ={};
         int inputId = 0;
+
+        routeFinder.sortComparison();
         while (true) {
             try{
                 String input;
@@ -41,30 +50,30 @@ public class RouteFinderMenu {
                 if (command.equals("aprt")) {
                     String[] splitInput = input.split(" ");
                     if (splitInput.length != 2) {
-                        throw new GraphMenuException("Invalid input command format, needs 1 arguements, recieved " + (splitInput.length - 1)
+                        throw new RouterFinderException("Invalid input command format, needs 1 arguements, recieved " + (splitInput.length - 1)
                             + "\nTry: aprt PER");
                     }
 
-                    routeFinder.printAirportInfo(splitInput[1]);
+                    routeFinder.printAirportInfo(splitInput[1].toUpperCase());
 
                     // routeFinder
                 } else if (command.equals("rout")) {
                     String[] splitInput = input.split(" ");
                     if (splitInput.length != 5) {
-                        throw new GraphMenuException("Invalid input command format, needs 4 arguements, recieved " + (splitInput.length - 1) + "\nTry: rout PER SYD 2 d");
+                        throw new RouterFinderException("Invalid input command format, needs 4 arguements, recieved " + (splitInput.length - 1) + "\nTry: rout PER SYD 2 d");
                     }
 
                     if (splitInput[4].equals("d")) {
-                        routeFinder.printRoutes(splitInput[1], splitInput[2], Integer.valueOf(splitInput[3]), true);
+                        routeFinder.printRoutes(splitInput[1].toUpperCase(), splitInput[2].toUpperCase(), Integer.valueOf(splitInput[3]) + 1, true);
                     } else if (splitInput[4].equals("l")) {
-                        routeFinder.printRoutes(splitInput[1], splitInput[2], Integer.valueOf(splitInput[3]), false);
+                        routeFinder.printRoutes(splitInput[1].toUpperCase(), splitInput[2].toUpperCase(), Integer.valueOf(splitInput[3]) + 1, false);
                     } else {
-                        throw new GraphMenuException("Invalid input arguement 4, expected d or l, recieved " + (splitInput[4]));
+                        throw new RouterFinderException("Invalid input arguement 4, expected d or l, recieved " + (splitInput[4]));
                     }
                 } else {
-                    throw new GraphMenuException("Invalid input: " + input + " is not a recognised command");
+                    throw new RouterFinderException("Invalid input: " + input + " is not a recognised command");
                 }
-            } catch (GraphMenuException e) {
+            } catch (Exception e) {
                 System.out.println("Exception occurred: " + e);
             }
         }   

@@ -1,0 +1,71 @@
+In real life, airports are frequently represented with 3 letter codes, controlled by an organisation known as IATA.
+
+For user input the system uses these three letter IATA Codes.
+Some useful codes include:
+PER - Perth International Airport
+SYD - Sydney Kingsford Smith International Airport
+MEL - Melbourne International Airport
+LHR - London Heathrow Airport
+LGW - London Gatwick Airport
+ATL - Hartsfield Jackson Atlanta International Airport
+
+To run the code, compile and run RouteFinderMenu.java
+
+To find the name of an airport from it's code type "aprt" followed 
+    by the 3 letter IATA code.
+To find the name of the airport with code PER input:
+aprt PER
+Which would then output:
+PER: Perth International Airport
+
+To find a route between two airports, type "rout", then the code of the airport you want to start at, then the code of the airport you want to go to, then the maximum number of flights, then wether you want the results sorted by distance(d) or layover count.
+To find routes between Perth And London Heathrow, with a maximum of 2 layovers, sorted by distance, input:
+rout PER LHR 2 d
+Which will then output the 20 best routes, sorted from least distance to most, the first number being the rank of the route
+Found 43 routes between Perth International Airport (PER) and London Heathrow Airport (LHR)
+Displaying the top 20 routes
+1: Length: 16141 km     Layovers: 1     Route: PER -> DXB -> LHR
+2: Length: 16141 km     Layovers: 2     Route: PER -> DXB -> ZRH -> LHR
+3: Length: 16156 km     Layovers: 2     Route: PER -> DXB -> BAH -> LHR
+4: Length: 16164 km     Layovers: 2     Route: PER -> DXB -> AMM -> LHR
+5: Length: 16170 km     Layovers: 2     Route: PER -> DXB -> GVA -> LHR
+6: Length: 16172 km     Layovers: 2     Route: PER -> DXB -> MUC -> LHR
+7: Length: 16177 km     Layovers: 2     Route: PER -> DXB -> IST -> LHR
+8: Length: 16188 km     Layovers: 2     Route: PER -> DXB -> FRA -> LHR
+9: Length: 16217 km     Layovers: 2     Route: PER -> DXB -> DUS -> LHR
+10: Length: 16263 km    Layovers: 2     Route: PER -> DXB -> RUH -> LHR
+11: Length: 16267 km    Layovers: 2     Route: PER -> DXB -> PRG -> LHR
+12: Length: 16420 km    Layovers: 2     Route: PER -> DXB -> HAM -> LHR
+13: Length: 16523 km    Layovers: 2     Route: PER -> DXB -> WAW -> LHR
+14: Length: 16640 km    Layovers: 2     Route: PER -> DXB -> CPH -> LHR
+15: Length: 16641 km    Layovers: 2     Route: PER -> DXB -> JED -> LHR
+16: Length: 16704 km    Layovers: 2     Route: PER -> DXB -> MAN -> LHR
+17: Length: 16835 km    Layovers: 1     Route: PER -> SIN -> LHR
+18: Length: 16835 km    Layovers: 2     Route: PER -> SIN -> DXB -> LHR
+19: Length: 16860 km    Layovers: 2     Route: PER -> DXB -> NCL -> LHR
+20: Length: 17156 km    Layovers: 2     Route: PER -> DPS -> SIN -> LHR
+
+Alternatively, to sort the same routes by layover input:
+rout PER LHR 2 l
+
+Which will the output:
+1: Length: 16141 km     Layovers: 1     Route: PER -> DXB -> LHR
+2: Length: 16835 km     Layovers: 1     Route: PER -> SIN -> LHR
+3: Length: 18997 km     Layovers: 1     Route: PER -> JNB -> LHR
+4: Length: 16141 km     Layovers: 2     Route: PER -> DXB -> ZRH -> LHR
+5: Length: 16156 km     Layovers: 2     Route: PER -> DXB -> BAH -> LHR
+6: Length: 16164 km     Layovers: 2     Route: PER -> DXB -> AMM -> LHR
+7: Length: 16170 km     Layovers: 2     Route: PER -> DXB -> GVA -> LHR
+8: Length: 16172 km     Layovers: 2     Route: PER -> DXB -> MUC -> LHR
+9: Length: 16177 km     Layovers: 2     Route: PER -> DXB -> IST -> LHR
+10: Length: 16188 km    Layovers: 2     Route: PER -> DXB -> FRA -> LHR
+11: Length: 16217 km    Layovers: 2     Route: PER -> DXB -> DUS -> LHR
+12: Length: 16263 km    Layovers: 2     Route: PER -> DXB -> RUH -> LHR
+13: Length: 16267 km    Layovers: 2     Route: PER -> DXB -> PRG -> LHR
+14: Length: 16420 km    Layovers: 2     Route: PER -> DXB -> HAM -> LHR
+15: Length: 16523 km    Layovers: 2     Route: PER -> DXB -> WAW -> LHR
+16: Length: 16640 km    Layovers: 2     Route: PER -> DXB -> CPH -> LHR
+17: Length: 16641 km    Layovers: 2     Route: PER -> DXB -> JED -> LHR
+18: Length: 16704 km    Layovers: 2     Route: PER -> DXB -> MAN -> LHR
+19: Length: 16835 km    Layovers: 2     Route: PER -> SIN -> DXB -> LHR
+20: Length: 16860 km    Layovers: 2     Route: PER -> DXB -> NCL -> LHR

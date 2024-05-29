@@ -47,15 +47,6 @@ public class Router {
 
         airports = usedAirports;
 
-        // printAirportInfo("PER");
-
-        // routes.displayAsList(); 
-
-        // printAllRoutes("PER", "CDG", 4, false);
-        // allRoutes = routes.breadthFirstKeyList("PER", "ASP", 1);
-        // printAllRoutes(allRoutes);
-        // allRoutes = routes.breadthFirstKeyList("ASP", "SYD", 1);
-        // printAllRoutes(allRoutes);
     }
 
     public void printRoutes(String codeFrom, String codeTo, int maxDepth, boolean sortByDistance) {
@@ -94,7 +85,7 @@ public class Router {
             String pathString = i + ": Length: ";
             pathString += (int) currentPath.getIteratorData();
             pathString += " km  \tLayovers: ";
-            pathString += (currentPath.getSize() - 2);
+            pathString += (currentPath.getSize() - 3);
             pathString += "\tRoute: ";
             currentPath.setIteratorNext();
 
@@ -209,38 +200,32 @@ public class Router {
             for (int i = mid; i < stop; i ++) {
                 rightArray[i - mid] = routesToSort[i];
             }
-            System.out.println(start + " " + stop + " " + (stop - start));
             
             int leftIndex = 0;
             int rightIndex = 0;
             int arrayIndex = start;
 
             while (arrayIndex < stop) {
-                // System.out.println("Li: " + leftIndex + " Ri: " + rightIndex + " Ai: " + arrayIndex);
                 
                 if (leftIndex < leftArray.length && rightIndex < rightArray.length) {
                     LinkedList leftCurrent = (LinkedList) leftArray[leftIndex];
                     LinkedList rightCurrent = (LinkedList) rightArray[rightIndex];
     
                     if (getRouteDistance(leftCurrent) > getRouteDistance(rightCurrent)) {
-                        System.out.println(getRouteDistance(leftCurrent));
                         routesToSort[arrayIndex] = leftCurrent;
                         leftIndex ++;
                     } else {
-                        System.out.println(getRouteDistance(rightCurrent));
                         routesToSort[arrayIndex] = rightCurrent;
                         rightIndex ++;
                     }
                 } else if (leftIndex < leftArray.length && rightIndex >= rightArray.length){
                     LinkedList leftCurrent = (LinkedList) leftArray[leftIndex];
                     routesToSort[arrayIndex] = leftCurrent;
-                    System.out.println(getRouteDistance(leftCurrent));
                     leftIndex ++;
                     
                 } else if (leftIndex >= leftArray.length && rightIndex < rightArray.length){
                     LinkedList rightCurrent = (LinkedList) rightArray[rightIndex];
                     
-                    System.out.println(getRouteDistance(rightCurrent));
                     routesToSort[arrayIndex] = rightCurrent;
                     rightIndex ++;
                 } else {
@@ -271,7 +256,6 @@ public class Router {
     }
 
     private void quick(int start, int stop, Object[] routesToSort) {
-        // System.out.println(start + " " + stop);
         if (stop - start > 1) {
             LinkedList pivotRoute = (LinkedList) routesToSort[stop - 1];
             int pivot = getRouteDistance(pivotRoute);
@@ -322,8 +306,6 @@ public class Router {
     private int getRouteDistance(LinkedList route) {
         return (int) route.peekFront();
     }
-
-
 
     private void readInAllAirports() {
         Scanner scanner = new Scanner(System.in);
@@ -495,5 +477,52 @@ public class Router {
     }
 
 
+    public void sortComparison() {
+        for (int j = 0; j < 20; j ++) {
+            Airport from = (Airport) airports.randomEntry();
+            Airport to = (Airport) airports.randomEntry();
+            while (from.getName().equals(to.getName())) {
+                to = (Airport) airports.randomEntry();
+            }
+    
+            int i = 1;
+            LinkedList allRoutes = new LinkedList();
+            while (allRoutes.getSize() == 0) {
+                allRoutes = routes.breadthFirstKeyList(from.getCode(), to.getCode(), i);
+                i ++;
+    
+                if (i >= 10) {
+                    from = (Airport) airports.randomEntry();
+                    to = (Airport) airports.randomEntry();
+                    while (from.getName().equals(to.getName())) {
+                        to = (Airport) airports.randomEntry();
+                    }
+                    i = 1;
+                }
+            }
+    
+            int max = i + 3;
+    
+            for (i = i - 1; i < max; i ++) {
+                allRoutes = routes.breadthFirstKeyList(from.getCode(), to.getCode(), i);
+                Long start = System.nanoTime();   
+                sortAllRoutesByDistance(allRoutes);
+                Long end = System.nanoTime();
+                Long heap = end - start;
+                start = System.nanoTime();
+                mergeSortRoutesByDistance(allRoutes);
+                end = System.nanoTime();
+                Long merge = end - start;
+                start = System.nanoTime();
+                quickSortRoutesByDistance(allRoutes);
+                end = System.nanoTime();
+                Long quick = end - start;
+    
+                System.out.println(allRoutes.getSize() + ", " + heap + ", " + merge + ", " + quick);
+            }
+    
+        }
+    }
+        
 
 }

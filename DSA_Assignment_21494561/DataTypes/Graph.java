@@ -295,7 +295,7 @@ public class Graph {
     public LinkedList breadthFirstKeyList(String keyFrom, String keyTo, int maxDepth) {
 
         if (hasNode(keyFrom) == false || hasNode(keyTo) == false) {
-            throw new GraphException("Searching for path between one or more non-existent node, Frome: " + keyFrom + " To: " + keyTo);
+            throw new GraphException("Searching for path between one or more non-existent node, From: " + keyFrom + " To: " + keyTo);
         }
 
         if (keyFrom.equals(keyTo)) {

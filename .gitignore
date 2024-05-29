@@ -12,3 +12,9 @@ DSA_Assignment_21494561/DataTypes/LinkedList$ListNode.class
 DSA_Assignment_21494561/RouteFinder/RouteFinder.class
 DSA_Assignment_21494561/RouteFinder/RouteFinder$RouteFinderException.class
 DSA_Assignment_21494561/RouteFinderMenu.class
+DSA_Assignment_21494561/DataTypes/Heap.class
+DSA_Assignment_21494561/DataTypes/Heap$HeapEntry.class
+DSA_Assignment_21494561/DataTypes/Heap$HeapException.class
+DSA_Assignment_21494561/RouteFinder/Router.class
+DSA_Assignment_21494561/RouteFinder/Router$RouterException.class
+.gitignore
