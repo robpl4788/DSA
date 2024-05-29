@@ -1,5 +1,7 @@
 package DSA_Assignment_21494561.RouteFinder;
 
+
+// Class to store info about a specific airport
 public class Airport {
     private String code;
     private String name;
@@ -30,6 +32,7 @@ public class Airport {
         return longitude;
     }
 
+    // Get the distance to another airport
     protected int getDistanceKm(Airport other) {
         double result;
 
@@ -40,7 +43,7 @@ public class Airport {
             //Assume pythagorean distance works fine on a sphere
             result = Math.pow(getLattitude() - other.getLattitude(), 2);
             result += Math.pow(getLongitude() - other.getLongitude(), 2);
-           result = Math.sqrt(result);
+            result = Math.sqrt(result);
             result *= degreesToKm;
         }
 

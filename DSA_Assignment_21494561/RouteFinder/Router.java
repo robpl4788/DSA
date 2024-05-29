@@ -28,14 +28,16 @@ public class Router {
 
     int count = 0;
 
+    // Create the router object
     public Router() {
         airports = new HashTable();
         routes = new Graph();
 
+        // Load in the airports and flights
         readInAllAirports();
-
         readInFlights();
 
+        // Purge the airport hash table of unused airports
         LinkedList useAirportCodes = routes.getAllKeys();
         HashTable usedAirports = new HashTable();
 
@@ -49,6 +51,7 @@ public class Router {
 
     }
 
+    // Print the top 20 routes between to airports with given codes, to a max depth, sorted by distance or layover count
     public void printRoutes(String codeFrom, String codeTo, int maxDepth, boolean sortByDistance) {
         if (hasAirport(codeFrom) == false) {
             throw new RouterException("Looking for route from node that doesn't exist: " + codeFrom);
@@ -56,14 +59,17 @@ public class Router {
             throw new RouterException("Looking for route from to that doesn't exist: " + codeTo);
         }
 
+        // Get all the valid routes
         LinkedList allRoutes = routes.breadthFirstKeyList(codeFrom, codeTo, maxDepth);
 
+        // Sort all the valid routes, using heap sort
         if (sortByDistance) {
-            allRoutes = quickSortRoutesByDistance(allRoutes);
+            allRoutes = sortAllRoutesByDistance(allRoutes);
         } else {
             allRoutes = sortAllRoutesByLayover(allRoutes, maxDepth);
         }
 
+        // Print the top 20 routes
         int routeCount = allRoutes.getSize();
         String fromName = ((Airport) airports.getElement(codeFrom)).getName();
         String toName = ((Airport) airports.getElement(codeTo)).getName();
@@ -78,6 +84,7 @@ public class Router {
 
         int i = 1;
 
+        // Print the routes, stopping at the 20th best
         do {
             LinkedList currentPath = (LinkedList) allRoutes.getIteratorData();
             currentPath.setIteratorAtHead();
@@ -104,6 +111,7 @@ public class Router {
         } while (allRoutes.setIteratorNext());
     }
 
+    // Print info about an airport with a given code
     public void printAirportInfo(String code) {
         if (hasAirport(code) == false) {
             System.out.println(code + " is not a known airport");
@@ -116,10 +124,12 @@ public class Router {
         }
     }
 
+    // Check if an airport is in the system
     public boolean hasAirport(String code) {
         return airports.hasKey(code);
     }
 
+    // Sort all routes by number of layovers, then by distance, using heap sort
     private LinkedList sortAllRoutesByLayover(LinkedList allRoutes, int maxDepth) {
         Heap[] routeHeapArray = new Heap[maxDepth + 2];
         for (int i = 0; i < maxDepth + 2; i ++) {
@@ -145,6 +155,7 @@ public class Router {
         return newRoutes;
     }
 
+    // Sort all routes by their total distance using heap sort. Sorts from largest to smallest
     private LinkedList sortAllRoutesByDistance(LinkedList allRoutes) {
         Heap routeHeap = new Heap(allRoutes.getSize());
         allRoutes.setIteratorAtHead();
@@ -162,13 +173,14 @@ public class Router {
         return newRoutes;
     }
 
-    // Sorts from largest to smallest
+    // Sort all routes by their total distance using merge sort. Sorts from largest to smallest
     private LinkedList mergeSortRoutesByDistance(LinkedList allRoutes) {
 
         Object[] routeArray = allRoutes.asArray();
 
         merge(0, routeArray.length, routeArray);
 
+        // Convert back to a linked list
         LinkedList sorted = new LinkedList();
 
         for (int i = 0; i < routeArray.length; i ++) {
@@ -178,19 +190,21 @@ public class Router {
         return sorted;
     }
 
-    // Start include, stop excluded
+    // Merge sort a subarray, Start included, stop excluded
     private void merge(int start, int stop, Object[] routesToSort) {
 
         
         if (stop == 0) {
-            throw new RouterException("Lol");
+            throw new RouterException("Merging subarray with 0 length");
         }
-        if (stop - start > 1) {
+        else if (stop - start > 1) {
             int mid = (start + stop) / 2;
-            
+           
+            // Sort the two half sub-arrays
             merge(start, mid, routesToSort);
             merge(mid, stop, routesToSort);
             
+            // Copy the sorted sub-arrays
             Object leftArray[] = new Object[mid - start];
             for (int i = start; i < mid; i ++) {
                 leftArray[i - start] = routesToSort[i];
@@ -201,16 +215,18 @@ public class Router {
                 rightArray[i - mid] = routesToSort[i];
             }
             
+            // Merge the two subarrays back together
             int leftIndex = 0;
             int rightIndex = 0;
             int arrayIndex = start;
 
             while (arrayIndex < stop) {
-                
+                // Left and right array still have elements
                 if (leftIndex < leftArray.length && rightIndex < rightArray.length) {
                     LinkedList leftCurrent = (LinkedList) leftArray[leftIndex];
                     LinkedList rightCurrent = (LinkedList) rightArray[rightIndex];
     
+                    // First unsorted value of left array is less than first unsorted value of right array
                     if (getRouteDistance(leftCurrent) > getRouteDistance(rightCurrent)) {
                         routesToSort[arrayIndex] = leftCurrent;
                         leftIndex ++;
@@ -218,11 +234,13 @@ public class Router {
                         routesToSort[arrayIndex] = rightCurrent;
                         rightIndex ++;
                     }
+                // Left array has elements but right array is empty
                 } else if (leftIndex < leftArray.length && rightIndex >= rightArray.length){
                     LinkedList leftCurrent = (LinkedList) leftArray[leftIndex];
                     routesToSort[arrayIndex] = leftCurrent;
                     leftIndex ++;
                     
+                // Right array has elements but left array is empty
                 } else if (leftIndex >= leftArray.length && rightIndex < rightArray.length){
                     LinkedList rightCurrent = (LinkedList) rightArray[rightIndex];
                     
@@ -240,7 +258,7 @@ public class Router {
 
     }
 
-
+    // Sort all routes by their total distance using quick sort. Sorts from largest to smallest
     private LinkedList quickSortRoutesByDistance(LinkedList allRoutes) {
         Object[] routeArray = allRoutes.asArray();
 
@@ -255,15 +273,16 @@ public class Router {
         return sorted;
     }
 
+        // Quick sort a subarray, Start included, stop excluded
     private void quick(int start, int stop, Object[] routesToSort) {
         if (stop - start > 1) {
             LinkedList pivotRoute = (LinkedList) routesToSort[stop - 1];
             int pivot = getRouteDistance(pivotRoute);
             LinkedList moreThan = new LinkedList(); 
-            LinkedList lessThan = new LinkedList(); // or equal
+            LinkedList lessThan = new LinkedList(); // or equal to preserve order
 
-            int i;
-            for (i = start; i < stop - 1; i ++) {
+            // Determine if each element is less than or more than the pivot
+            for (int i = start; i < stop - 1; i ++) {
                 LinkedList current = (LinkedList) routesToSort[i];
                 if (getRouteDistance(current) <= pivot) {
                     lessThan.pushBack(current);
@@ -273,9 +292,9 @@ public class Router {
 
             }
 
-            i = start;
+            // Merge the lists of less than and more than back into the array
+            int i = start;
             while (moreThan.getSize() > 0) {
-                // System.out.println(i);
                 routesToSort[i] = moreThan.popFront();
                 i ++;
             }
@@ -293,8 +312,7 @@ public class Router {
                 throw new RouterException("Quick sort lost or gained an element unexpectedly");
             }
 
-            // double ratio = ((double) (pivotIndex - start)) / (stop - start) ;
-            // System.out.println(ratio);
+            // Sort the sides of the array around the pivot
             quick(start, pivotIndex, routesToSort);
             quick(pivotIndex + 1, stop, routesToSort);
             }
@@ -302,11 +320,12 @@ public class Router {
     }
 
 
-
+    // Get the distance from a Linked List represented Route
     private int getRouteDistance(LinkedList route) {
         return (int) route.peekFront();
     }
 
+    // Read in all the airports from a file
     private void readInAllAirports() {
         Scanner scanner = new Scanner(System.in);
         File airportFile = new File("DSA_Assignment_21494561\\RouteFinder\\airports.csv");
@@ -330,6 +349,7 @@ public class Router {
     }
 
     @SuppressWarnings("unused")
+    // Add an airport from a raw string
     private void addAirport(String raw) {
         final int Id = 0; //Openflight id for airport
         final int Name = 1;
@@ -351,16 +371,13 @@ public class Router {
         if (split.length != 14) {
             throw new RouterException("Airport entry invalid at line: " + (count + 1));
         }
-
-       
-        // System.out.println(count + ": IATA: " + split[IATA] + " Name: " + split[Name] + " Lattitude: " + split[Latitude] + " Longitude: " + split[Longitude]);
         
         String iata = split[IATA];
         String name = split[Name];
         Double lattitude = Double.parseDouble(split[Latitude]);
         Double longitude = Double.parseDouble(split[Longitude]);
         
-        //Confirm the IATA code is valid
+        //Confirm the IATA code is valid, don't add if invalid
         if (iata.length() == 5) {
             iata = iata.substring(1, 4);
             name = name.substring(1, name.length() - 1);
@@ -398,6 +415,7 @@ public class Router {
         }
     }
 
+    // Adds Flights from a raw string
     @SuppressWarnings("unused")
     private void addRoute(String raw) {
 
@@ -415,12 +433,9 @@ public class Router {
 
         if (split.length != 9) {
             System.out.println("Route entry invalid at line: " + (count + 1) + " Raw: " + raw);
-            // throw new RouteFinderException("Route entry invalid at line: " + (count + 1));
         }
 
        
-        // System.out.println(count + ": IATA: " + split[IATA] + " Name: " + split[Name] + " Lattitude: " + split[Latitude] + " Longitude: " + split[Longitude]);
-
         //Confirm source and destination a valid IATA code is valid
         String source = split[SourceAirport];
         String destination = split[DestinationAirport];
@@ -458,6 +473,7 @@ public class Router {
         count ++;
     }
 
+    // Determine if a route should be added
     private boolean shouldAddRoute(String sourceKey, String destinationKey, String airline) {
         boolean result = true;
         
@@ -477,20 +493,25 @@ public class Router {
     }
 
 
+    // Time and output the different sorting algorithms, results are expected to be copied from the terminal to a csv file for analysis
     public void sortComparison() {
+        // Repeat 20 times
         for (int j = 0; j < 20; j ++) {
+            // Get two unique random airports
             Airport from = (Airport) airports.randomEntry();
             Airport to = (Airport) airports.randomEntry();
             while (from.getName().equals(to.getName())) {
                 to = (Airport) airports.randomEntry();
             }
     
+            // Determine the minimum number of flights required to get between the airports
             int i = 1;
             LinkedList allRoutes = new LinkedList();
             while (allRoutes.getSize() == 0) {
                 allRoutes = routes.breadthFirstKeyList(from.getCode(), to.getCode(), i);
                 i ++;
     
+                // Catch if the airports aren't actually connected
                 if (i >= 10) {
                     from = (Airport) airports.randomEntry();
                     to = (Airport) airports.randomEntry();
@@ -503,6 +524,7 @@ public class Router {
     
             int max = i + 3;
     
+            // Time each sort, output the results, then include more elements to be sorted and repeat three times
             for (i = i - 1; i < max; i ++) {
                 allRoutes = routes.breadthFirstKeyList(from.getCode(), to.getCode(), i);
                 Long start = System.nanoTime();   

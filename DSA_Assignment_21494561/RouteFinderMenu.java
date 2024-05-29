@@ -21,32 +21,28 @@ public class RouteFinderMenu {
         @SuppressWarnings("resource")
         Scanner scanner = new Scanner(System.in);
 
-        String[] inputs ={};
-        int inputId = 0;
-
         routeFinder.sortComparison();
         while (true) {
             try{
                 String input;
 
+                // Print help menu
                 System.out.println("aprt {code}                    : Display information about the airport with 3 letter IATA {code}");
                 System.out.println("rout {from} {to} {depth} {d/l} : Display the 20 best routes with a max layover count of {depth}, between the airports with IATA codes {from} and {to} sorted by layovers{l} or distance{d}");
 
-                if (inputId >= inputs.length) {
-                    input = scanner.nextLine();
-                } else {
-                    input = inputs[inputId];
-                    inputId ++;
-                }
+                input = scanner.nextLine();
 
+                // Remove white space from the end of the input
                 while (input.charAt(input.length() - 1) == ' ') {
                     input = input.substring(0, input.length() - 1);
                 }
 
 
+                // Extract the command to be run
                 String command = input.substring(0, 4).toLowerCase();
 
 
+                // Print airport information
                 if (command.equals("aprt")) {
                     String[] splitInput = input.split(" ");
                     if (splitInput.length != 2) {
@@ -56,7 +52,7 @@ public class RouteFinderMenu {
 
                     routeFinder.printAirportInfo(splitInput[1].toUpperCase());
 
-                    // routeFinder
+                // Print found routes
                 } else if (command.equals("rout")) {
                     String[] splitInput = input.split(" ");
                     if (splitInput.length != 5) {

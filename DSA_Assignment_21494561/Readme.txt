@@ -17,3 +17,5 @@ DataTypes/LinkedList.java   - Generic Linked List Data Type
 
 ## Dependencies
 - Java
+- Java Math
+- Java Random

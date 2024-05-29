@@ -1,8 +1,6 @@
 package DSA_Assignment_21494561.DataTypes;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+
 import java.lang.Math;
 import java.util.Random;
 
@@ -13,13 +11,14 @@ public class HashTable {
         }
     }
     
+    // Class to store each entry in the hash table
     private class HashTableEntry {
         String key;
         Object data;
 
 
-        boolean initialised = false;
-        boolean hasData = false;
+        boolean initialised = false; // Has this node had data in the past?
+        boolean hasData = false;     // Does this node have data currently
         
         
         private boolean isInitialised() {
@@ -30,6 +29,7 @@ public class HashTable {
             return hasData;
         }
 
+        // Give the node data and a key
         public void set(String Key, Object Data) {
             key = Key;
             data = Data;
@@ -37,6 +37,7 @@ public class HashTable {
             hasData = true;
         }
         
+        // Delete the data from the node (doesn't actually delete just forgets that it exists)
         public void delete() {
             if (hasData == false) {
                 throw new HashTableException("Deleting HashTableEntry that doesn't exist");
@@ -44,39 +45,43 @@ public class HashTable {
             hasData = false;
         }
 
+        // Get the key to this node, throws an error if it doesn't have data
         private String getKey() {
+            if (hasData == false) {
+                throw new HashTableException("Getting key from HashTableEntry that doesn't exist");
+            }
             return key;
         }
 
+        // Get the data from this node, throws an error if it doesn't have data
         private Object getData() {
+            if (hasData == false) {
+                throw new HashTableException("Getting data from HashTableEntry that doesn't exist");
+            }
             return data;
         }
     }
 
     //Config parameters
-    private int minLength = 11;
-    private double minCapacity = 0.1;
-    private double maxCapacity = 0.5;
-    private double targetCapacity = (minCapacity + maxCapacity) / 2;
-    private double targetMaxStepFraction = 0.25;
+    private int minLength = 11; // Min length the hashtable should be
+    private double minCapacity = 0.1; // Fraction of fullnes at which the table should downsize
+    private double maxCapacity = 0.5; // Fraction of fullnes at which the table should upsize
+    private double targetCapacity = (minCapacity + maxCapacity) / 2; // Capacity fraction to resize to
+    private double targetMaxStepFraction = 0.25; // Fraction of the table the maximum linear probe step should be
+    private int maxStep = 3; // The Maximum linear probe step size
 
-    private int tableLength = minLength;
+    private int tableLength = minLength; // The current length of the table
 
-    private int size = 0;
-    private int entries = 0;
+    private int size = 0; // The current number of active entries
+    private int entries = 0; // The current number of active and deleted entries
 
     private HashTableEntry[] table = new HashTableEntry[tableLength];
 
-    private int maxStep = 3;
 
     public HashTable() {
         for (int i = 0; i < tableLength; i ++) {
             table[i] = new HashTableEntry();
         }
-
-        // for (int i = 0; i < 100; i ++) {
-        //     System.out.println(Integer.toString(i) + ": " + Integer.toString(nextPrime(i)));
-        // }
     }
 
     public int getSize() {
@@ -100,6 +105,8 @@ public class HashTable {
         while (isPrime == false) {
             result ++;
             isPrime = true;
+
+            // Check if result is a prime
             int maxFactor = (int) Math.sqrt(result);
             for (int i = 2; i <= maxFactor; i ++) {
                 if (result % i == 0) {
@@ -112,11 +119,11 @@ public class HashTable {
         return result;
     }
 
+    // Attempt to resize the table, will not if should not
     private void resize() {
+        // Check if should resize the table
         if (((double) size) / tableLength < minCapacity || ((double) Math.max(size, entries)) / tableLength > maxCapacity) {
-            // System.out.print("Resizing from ");
-            // System.out.print(tableLength);
-            // System.out.print(" to ");
+
             HashTableEntry[] oldTable = table;
 
             tableLength = nextPrime((int)(size / targetCapacity));
@@ -124,9 +131,9 @@ public class HashTable {
                 tableLength = minLength;
             }
 
-            // System.out.println(tableLength);
             maxStep = nextPrime((int)(tableLength * targetMaxStepFraction));
     
+            // Create the new table
             table = new HashTableEntry[tableLength];
             for (int i = 0; i < tableLength; i ++) {
                 table[i] = new HashTableEntry();
@@ -135,6 +142,7 @@ public class HashTable {
             size = 0;
             entries = 0;
     
+            // Insert all the old elements into the new table
             for (int i = 0; i < oldTable.length; i ++) {
                 HashTableEntry current = oldTable[i];
                 if (current.doesHaveData()) {
@@ -148,8 +156,8 @@ public class HashTable {
                     while (table[index].doesHaveData()) {
                         index += step;
                         index %= getTableLength();
-                        // System.out.println(index);
                     }
+
                     table[index].set(current.getKey(), current.getData());
                     
                     size ++;
@@ -161,6 +169,7 @@ public class HashTable {
 
     }
 
+    // Hash a string into an integer to be used as an index into the table
     private int hash(String toHash) {
         int hashIndex = 0;
 
@@ -174,11 +183,12 @@ public class HashTable {
         return hashIndex;
     }
 
+    // Hash a string into an integer to be used to linearly probe the table
     private int stepHash(String toHash) {
-        // System.out.println(maxStep);
         return hash(toHash) % (maxStep - 1) + 1;
     }
 
+    // Add an element to the table
     public void addElement(String key, Object data) {
 
         if (size >= getTableLength()) {
@@ -187,15 +197,11 @@ public class HashTable {
 
         int index = hash(key);
         int step = stepHash(key);
-        // System.out.println(key);
-        // System.out.println(tableLength);
-        // System.out.println(index);
-        // System.out.println(table[index]);
 
+        // Add an index if it's key doesn't already exist, if it does print an error
         try {
             while (table[index].doesHaveData()) {
-                // System.out.println(index);
-                // System.out.println(step);
+
                 if (table[index].getKey().equals(key)) {
                     throw new HashTableException("Key already exists in table, not adding entry");
                 }
@@ -203,9 +209,7 @@ public class HashTable {
                 index += step;
                 index %= getTableLength();
     
-                
-                // System.out.println(index);
-            }
+                            }
             if (table[index].isInitialised() == false) {
                 entries ++;
             }
@@ -216,7 +220,6 @@ public class HashTable {
 
             resize();
     
-
         } catch (HashTableException e) {
             System.out.println(e + ": Key is: " + key + " Data is: " + data);
         }
@@ -224,6 +227,7 @@ public class HashTable {
         
     }
 
+    // Print the table to the terminal
     public void printTable() {
         for(int i = 0; i < getTableLength(); i ++) {
             if (table[i].doesHaveData()) {
@@ -236,6 +240,7 @@ public class HashTable {
         System.out.println("\n");
     }
 
+    // Get the table entry with a given key
     private HashTableEntry getEntry(String key) {
         HashTableEntry result = null;
 
@@ -264,10 +269,12 @@ public class HashTable {
         return result;
     }
 
+    // Get the data attached to an entry with a given key
     public Object getElement(String key) {
         return getEntry(key).getData();
     }
 
+    // Delete an entry with a given key
     public void removeEntry(String key) {
         getEntry(key).delete();
         size --;
@@ -275,6 +282,7 @@ public class HashTable {
         resize();
     }
 
+    // Check if a node with a given key is in the table
     public boolean hasKey(String key) {
         boolean result = true;
 
@@ -287,6 +295,7 @@ public class HashTable {
         return result;
     }
 
+    // Get the data attached to a random entry in the table
     public Object randomEntry() {
         Random rand = new Random();
 

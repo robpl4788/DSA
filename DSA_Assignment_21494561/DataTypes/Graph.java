@@ -1,6 +1,6 @@
 package DSA_Assignment_21494561.DataTypes;
 
-
+// Advanced Data Type that stores nodes and how they connect to each other
 public class Graph {
 
     public class GraphException extends RuntimeException {
@@ -9,7 +9,10 @@ public class Graph {
         }
     }
 
+    // Class to hold the data, key and what other nodes each node is connected to
     private class GraphNode {
+
+        // Class to conveniently store each edge with a weight
         private class GraphEdge {
             GraphNode destination;
             int weight;
@@ -48,6 +51,7 @@ public class Graph {
             return data;
         }
 
+        // Add a neighbour to this node, ensuring neighbours remains ordered
         void addNeighbour (GraphNode newNeighbour, int weight) {
             int index = 0;
 
@@ -56,7 +60,6 @@ public class Graph {
                 do {
                     GraphNode current = ((GraphEdge) neighbours.getIteratorData()).getDestination();
                     int keyComparison = current.getKey().compareToIgnoreCase(newNeighbour.getKey());
-                    // System.out.println(keyComparison);
                     if (keyComparison < 0) {
                         index ++;
                     } else if (keyComparison == 0) {
@@ -65,25 +68,14 @@ public class Graph {
                     }
                 } while (neighbours.setIteratorNext());
             }
-            // System.out.println("Connect " + key + " to " + newNeighbour.getKey() + " at index: " + index);
 
-            // for (int i = 0; i < neighbours.getSize(); i ++) {
-            //     System.out.println(newNeighbour.getKey().compareToIgnoreCase(((GraphNode) neighbours.peekIndex(i)).getKey()) > 0);
-            //     if (newNeighbour.getKey().compareToIgnoreCase(((GraphNode) neighbours.peekIndex(i)).getKey()) < 0) {
-            //         index = neighbours.getSize();
-            //     } else if (newNeighbour.getKey().compareToIgnoreCase(((GraphNode) neighbours.peekIndex(i)).getKey()) == 0) {
-            //     }
-            // }
-
-            // System.out.println(neighbours.getSize());
             neighbours.pushIndex(index, new GraphEdge(newNeighbour, weight));
-            // System.out.println(neighbours.getSize());
         }
 
+        // Checks if this node has a neighbour with a given key
         boolean hasNeighbour(String key) {
             boolean hasNeighbour = false;
             if (neighbours.getSize() != 0) {
-                // System.out.println("");
 
                 neighbours.setIteratorAtHead();
                 do {
@@ -97,6 +89,7 @@ public class Graph {
             return hasNeighbour;
         }
 
+        // Remove a neighbour with a given key, doesn't delete that node, just that this node is connected to it
         void popNeighbour (String key) {
             neighbours.setIteratorAtHead();
             boolean done = false;
@@ -115,6 +108,7 @@ public class Graph {
             neighbours.popIteratorNode();
         }
 
+        // Get a string containing all the keys of nodes this node is connected to, seperated by \t
         String getAdjacentKeys() {
             String output = "";
             if (neighbours.getSize() != 0) {
@@ -134,20 +128,17 @@ public class Graph {
         }
     
 
-
+        // Get the weight of an edge to a node with a given key
         int getEdgeWeight(String keyTo) {
 
             boolean hasNeighbour = false;
             int edgeWeight = 0;
-            // System.out.println("Looking for: " + keyTo);
 
             if (neighbours.getSize() != 0) {
-                // System.out.println("");
 
                 neighbours.setIteratorAtHead();
                 do {
                     GraphEdge currentEdge = (GraphEdge) neighbours.getIteratorData();
-                    // System.out.println(currentEdge.getDestination().getKey());
 
                     if (currentEdge.getDestination().getKey().equals(keyTo)) {
                         if (hasNeighbour) {
@@ -166,29 +157,28 @@ public class Graph {
         }
     }
 
+    //List of all nodes in graph
     LinkedList nodes = new LinkedList();
 
     public void addNode(String key, Object data) {
         nodes.pushBack(new GraphNode(key, data));
     }
 
+    // Add a one way edge between two nodes
     public void addDirectedEdge(String keyFrom, String keyTo, int weight) {
         GraphNode node1 = findNode(keyFrom);
-        GraphNode node2 = findNode(keyTo);
-
-        // System.out.println("Connect " + node1.getKey() + " to " + node2.getKey() + ", directed");
- 
+        GraphNode node2 = findNode(keyTo); 
 
         node1.addNeighbour(node2, weight);
     }
 
+    // Find the reference to a node with a given key
     private GraphNode findNode (String key) {
         GraphNode result = null;
         if (nodes.getSize() != 0) {
             nodes.setIteratorAtHead();
             do {
                 GraphNode current = ((GraphNode) nodes.getIteratorData());
-                // System.out.println(key + " " + current.getKey() + " " + current.getKey().compareToIgnoreCase(key));
                 if (current.getKey().compareToIgnoreCase(key) == 0) {
                     result = current;
                 }
@@ -201,7 +191,9 @@ public class Graph {
         return result;
     }
 
+    // Remove a node from the graph, including removing all edges pointed at it
     public void deleteNode(String key) {
+        //Delete the node
         nodes.setIteratorAtHead();
         do {
             GraphNode current = (GraphNode) nodes.getIteratorData();
@@ -210,6 +202,7 @@ public class Graph {
             }
         } while (nodes.setIteratorNext()); 
 
+        // Delete the neighbours
         nodes.setIteratorAtHead();
         do {
             GraphNode current = (GraphNode) nodes.getIteratorData();
@@ -220,42 +213,45 @@ public class Graph {
         } while (nodes.setIteratorNext());
     }
 
+    // Delete a one way edge
     public void deleteDirectedEdge(String keyFrom, String keyTo) {
         GraphNode from = findNode(keyFrom);
         from.popNeighbour(keyTo);
     }
 
+    // Check if a node with a given key is in the graph
     public boolean hasNode(String key) {
         boolean result = false;
         if (nodes.getSize() != 0) {
             nodes.setIteratorAtHead();
             do {
                 GraphNode current = ((GraphNode) nodes.getIteratorData());
-                // System.out.println(key + " " + current.getKey() + " " + current.getKey().compareToIgnoreCase(key));
                 if (current.getKey().compareToIgnoreCase(key) == 0) {
                     result = true;
                 }
             } while (nodes.setIteratorNext());
         }
-
-
         return result;
         }
 
+    // Check if two nodes with given keys are connected (directionally)
     public boolean hasEdge(String keyFrom, String keyTo) {
         GraphNode from = findNode(keyFrom);
         return from.hasNeighbour(keyTo);
     }
 
+    // Get the weight of an edge between two nodes
     public int edgeWeight(String keyFrom, String keyTo) {
         GraphNode from = findNode(keyFrom);
         return from.getEdgeWeight(keyTo);
     }
 
+    // Get the number of nodes in the graph
     public int nodeCount () {
         return nodes.getSize();
     }
 
+    // Get the number of edges in the graph
     public int edgeCount () {
         int edges = 0;
         if (nodeCount() != 0) {
@@ -267,15 +263,18 @@ public class Graph {
         return edges;
     }
 
+    // Get the data frin a node with a given key
     public Object getData(String key) {
         return findNode(key).getData();
     }
 
+    // Get a string that contains the keys of all nodes connected to a node with the given key, seperated by \t
     public String getAdjacentKeys(String key) {
         GraphNode node = findNode(key);
         return node.getAdjacentKeys();
     }
 
+    // Display the graph as a list
     public void displayAsList () {
         if (nodes.getSize() == 0) {
 		System.out.println("Nothing To Display");
@@ -316,26 +315,30 @@ public class Graph {
             LinkedList currentPath = (LinkedList) toSearchFrom.popFront();
             String currentKey = (String) currentPath.peekBack();
             GraphNode currentNode = findNode(currentKey);
+
+            // If at desrtination
             if (currentNode.getKey().equals(keyTo)) {
                 allPaths.pushBack(currentPath);
+        
+            // Else if not at max depth
             } else if (currentPath.getSize() <= maxDepth + 1) {
                 for (int i = 1; i < currentNode.neighbours.getSize(); i ++) {
+                    // Extend the current route by all nodes connected to the node the current route ends at
                     GraphNode mightSearch = ((GraphNode.GraphEdge) currentNode.neighbours.peekIndex(i)).getDestination();
                     String mightSearchKey = mightSearch.getKey();
 
+                    // Check the node we might add hasn't already been visited by this path
                     currentPath.setIteratorAtHead();
-                    currentPath.setIteratorNext();
+                    currentPath.setIteratorNext(); // Skip the distance
                     boolean thisPathAlreadyVisited = false;
+
                     do {
-                        
                         if (mightSearchKey.equals((String) currentPath.getIteratorData())) {
                             thisPathAlreadyVisited = true;
-                            // System.out.println(mightSearchKey + " = " +  currentPath.getIteratorData());
-                        } //else {
-                            // System.out.println(mightSearchKey + " != " +  currentPath.getIteratorData());
-                        // }
+                        }
                     } while (currentPath.setIteratorNext());
                     
+                    // If this route hasn't visited this node add it to the list to search
                     if (thisPathAlreadyVisited == false) {
                         LinkedList newPath = new LinkedList(currentPath);
                         newPath.pushBack(mightSearchKey);
@@ -351,6 +354,7 @@ public class Graph {
         return allPaths;
     }
     
+    // Get a Linked list containing the key for every node in the graph
     public LinkedList getAllKeys() {
         LinkedList allKeys = new LinkedList();
 
